@@ -336,6 +336,52 @@
     </div>
   </div>
 
+  
+  <!-- MODAL: SYNC KEY / WORKSPACE PASSCODE -->
+  <div id="sync-key-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-4 shadow-2xl max-h-[88vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-brand-border pb-3">
+        <h3 class="font-bold text-slate-100 flex items-center gap-2 text-sm">
+          <i data-lucide="key-round" class="w-4 h-4 text-brand-amber"></i>
+          <span>云端同步密钥 (多端专属账本)</span>
+        </h3>
+        <button onclick="closeSyncKeyModal()" class="text-slate-400 hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">同步密钥 / 密码 (区分大小写)</label>
+          <input type="text" id="input-sync-key" placeholder="例如: pengpeng" class="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-emerald">
+        </div>
+        <div class="p-3 rounded-xl bg-brand-bg border border-brand-border/60 text-xs text-slate-400 space-y-1.5">
+          <div class="text-slate-300 font-semibold flex items-center gap-1.5">
+            <span>💡</span> 多端同步规则：
+          </div>
+          <p>1. 在手机和电脑上输入<b>相同密钥</b>（默认: <code class="text-brand-cyan">pengpeng</code>），即可秒级互相同步所有项目与打勾进度。</p>
+          <p>2. 电脑端有新项目没同步？点击下方【强制推上云端】即可瞬间同步。</p>
+        </div>
+
+        <div class="flex items-center space-x-2 pt-1">
+          <button type="button" onclick="forcePushToCloud()" class="flex-1 py-2 px-2.5 rounded-xl bg-brand-border/80 hover:bg-brand-border text-xs text-slate-200 font-medium flex items-center justify-center space-x-1 transition active:scale-95">
+            <i data-lucide="cloud-upload" class="w-3.5 h-3.5 text-brand-cyan"></i>
+            <span>⬆️ 强制推上云端</span>
+          </button>
+          <button type="button" onclick="forcePullFromCloud()" class="flex-1 py-2 px-2.5 rounded-xl bg-brand-border/80 hover:bg-brand-border text-xs text-slate-200 font-medium flex items-center justify-center space-x-1 transition active:scale-95">
+            <i data-lucide="cloud-download" class="w-3.5 h-3.5 text-brand-emerald"></i>
+            <span>⬇️ 重新拉取云端</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-brand-border flex justify-end space-x-2">
+        <button onclick="closeSyncKeyModal()" class="px-3 py-1.5 rounded-lg bg-brand-border text-slate-300 text-xs">取消</button>
+        <button onclick="handleSaveSyncKey()" class="px-4 py-1.5 rounded-lg bg-brand-emerald hover:bg-emerald-400 text-black font-semibold text-xs transition active:scale-95">连接并切换</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-brand-card border border-brand-border text-slate-100 text-xs px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 pointer-events-none">
     <i data-lucide="check-circle" class="w-4 h-4 text-brand-emerald" id="toast-icon"></i>
@@ -1071,6 +1117,35 @@
     function closeSyncKeyModal() {
       document.getElementById('sync-key-modal').classList.add('hidden');
       document.getElementById('sync-key-modal').classList.remove('flex');
+    }
+
+    async function forcePushToCloud() {
+      const timestamp = Date.now();
+      localStorage.setItem('shootflow_updated_at', timestamp);
+      const wsId = getWorkspaceId();
+      const statusEl = document.getElementById('sync-status');
+      if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 上传中...`;
+      
+      const payload = { projects, customTemplates, currentProjectId };
+      try {
+        const { error } = await supabaseClient.from('shoot_workspace').upsert({
+          id: wsId,
+          data: payload,
+          updated_at: timestamp
+        });
+        if (error) throw error;
+        if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400"></span> 本地数据已推上云端`;
+        showToast(`🚀 本地 ${projects.length} 个项目已成功推送到云端！`);
+      } catch(e) {
+        console.error('Force push error:', e);
+        showToast('❌ 上传失败，请检查网络');
+      }
+    }
+
+    async function forcePullFromCloud() {
+      localStorage.setItem('shootflow_updated_at', '0'); // Reset timestamp to force pull
+      await pullFromCloud();
+      showToast('🔄 已强制从云端同步最新数据！');
     }
 
     async function handleSaveSyncKey() {
