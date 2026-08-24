@@ -138,6 +138,11 @@
 
       <!-- Actions -->
       <div class="flex items-center space-x-1.5 shrink-0">
+        <button onclick="openSyncKeyModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 transition active:scale-95" title="设置云端同步密钥">
+          <i data-lucide="key-round" class="w-3.5 h-3.5 text-brand-amber"></i>
+          <span id="sync-key-label" class="max-w-[70px] truncate hidden sm:inline">pengpeng</span>
+        </button>
+
         <button id="btn-projects" onclick="openProjectModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 transition active:scale-95">
           <i data-lucide="folder-kanban" class="w-3.5 h-3.5 text-brand-cyan"></i>
           <span id="current-project-label" class="max-w-[110px] sm:max-w-[160px] truncate font-medium">当前拍摄</span>
@@ -640,6 +645,8 @@
       document.getElementById('current-project-label').textContent = proj.name;
       document.getElementById('project-title-display').textContent = proj.name;
       document.getElementById('project-date').textContent = proj.date;
+      const keyLabel = document.getElementById('sync-key-label');
+      if (keyLabel) keyLabel.textContent = getSyncKey();
       document.getElementById('project-desc-display').textContent = proj.desc || '拍摄全流程防遗忘检查单';
 
       const minimalBtnText = document.getElementById('minimal-mode-text');
@@ -1044,6 +1051,41 @@
     }
 
     // ==========================================
+    
+    function getSyncKey() {
+      return localStorage.getItem('shootflow_sync_key') || 'pengpeng';
+    }
+
+    function getWorkspaceId() {
+      const k = getSyncKey();
+      return 'ws_' + k.replace(/[^a-zA-Z0-9_-]/g, '_');
+    }
+
+    function openSyncKeyModal() {
+      document.getElementById('input-sync-key').value = getSyncKey();
+      document.getElementById('sync-key-modal').classList.remove('hidden');
+      document.getElementById('sync-key-modal').classList.add('flex');
+      setTimeout(() => document.getElementById('input-sync-key').focus(), 50);
+    }
+
+    function closeSyncKeyModal() {
+      document.getElementById('sync-key-modal').classList.add('hidden');
+      document.getElementById('sync-key-modal').classList.remove('flex');
+    }
+
+    async function handleSaveSyncKey() {
+      const input = document.getElementById('input-sync-key').value.trim();
+      if (!input) {
+        alert('请输入有效的同步密钥');
+        return;
+      }
+      localStorage.setItem('shootflow_sync_key', input);
+      closeSyncKeyModal();
+      showToast(`🔑 已切换密钥: ${input}`);
+      renderUI();
+      await pullFromCloud();
+    }
+
     // 6. CUSTOM ITEMS & TEMPLATES
     // ==========================================
     function openAddItemModal(phaseIndex) {
@@ -1343,9 +1385,20 @@
       const statusEl = document.getElementById('sync-status');
       if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 检查云端...`;
       
+      const wsId = getWorkspaceId();
+
       try {
-        const { data, error } = await supabaseClient.from('shoot_workspace').select('*').eq('id', 'default_workspace').single();
-        if (error) throw error;
+        const { data, error } = await supabaseClient.from('shoot_workspace').select('*').eq('id', wsId).single();
+        if (error) {
+          // If workspace doesn't exist on cloud yet, push local data as seed!
+          console.log('No cloud data found for workspace, pushing local data as seed...');
+          const localTime = Date.now();
+          localStorage.setItem('shootflow_updated_at', localTime);
+          pushToCloud(localTime);
+          if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400"></span> 已绑定新密钥并上传数据`;
+          return;
+        }
+
         if (data) {
           const localTime = parseInt(localStorage.getItem('shootflow_updated_at') || '0');
           if (data.updated_at > localTime) {
@@ -1361,11 +1414,11 @@
             
             renderProjectList();
             renderUI();
-            if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400"></span> 已拉取最新数据`;
+            if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400"></span> 已同步云端最新数据`;
           } else if (data.updated_at < localTime) {
             pushToCloud(localTime);
           } else {
-            if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> 本地数据最新`;
+            if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> 数据已是最新`;
           }
         }
       } catch (e) {
@@ -1384,11 +1437,13 @@
       const statusEl = document.getElementById('sync-status');
       if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 同步中...`;
       
+      const wsId = getWorkspaceId();
+
       syncTimeout = setTimeout(async () => {
         const payload = { projects, customTemplates, currentProjectId };
         try {
           const { error } = await supabaseClient.from('shoot_workspace').upsert({
-            id: 'default_workspace',
+            id: wsId,
             data: payload,
             updated_at: timestamp
           });
