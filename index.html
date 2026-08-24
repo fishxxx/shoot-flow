@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SHOOT FLOW // 拍摄全流程防忘清单</title>
+
+  <!-- Tailwind CSS CDN (Synchronous to prevent FOUC and styling issues) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#0B0F17',
+              card: '#131926',
+              cardHover: '#1B2335',
+              border: '#232D42',
+              emerald: '#10B981',
+              emeraldGlow: 'rgba(16, 185, 129, 0.25)',
+              amber: '#F59E0B',
+              amberGlow: 'rgba(245, 158, 11, 0.25)',
+              cyan: '#06B6D4',
+              red: '#EF4444',
+              dim: '#64748B'
+            }
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'Fira Code', 'Menlo', 'monospace'],
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Async Loader for other CDNs -->
+  <script>
+    function loadScript(src, onLoad) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.crossOrigin = "anonymous";
+      script.async = true;
+      if (onLoad) script.onload = onLoad;
+      document.head.appendChild(script);
+    }
+
+    loadScript("https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js", () => {
+      try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
+    });
+    loadScript("https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js");
+    loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2", () => {
+      try { pullFromCloud(); } catch(e){}
+    });
+
+    window.addEventListener('error', function(e) {
+        if (e.message === 'Script error.') return;
+        alert("Global JS Error: " + e.message + " at " + (e.filename || 'unknown') + ":" + (e.lineno || 0));
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+        alert("Unhandled Promise Rejection: " + e.reason);
+    });
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0F17; 
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232D42; 
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748B; 
+    }
+    /* Glow Animations */
+    .glow-checkbox:checked + div {
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      border-color: #10B981;
+    }
+    .phase-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    .animate-shake {
+      animation: shake 0.4s ease-in-out;
+      border-color: #EF4444 !important;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Mobile & Touch Optimizations */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    body {
+      padding-bottom: max(6rem, calc(4rem + env(safe-area-inset-bottom)));
+    }
+    header {
+      padding-top: max(0.75rem, env(safe-area-inset-top));
+    }
+    @media (max-width: 640px) {
+      input, select, textarea {
+        font-size: 16px !important; /* Prevents auto-zoom on iOS */
+      }
+    }
+  </style>
+</head>
+<body class="bg-brand-bg text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-emerald selection:text-black pb-24">
+
+  <!-- TOP APP HEADER -->
+  <header class="sticky top-0 z-40 bg-brand-bg/95 backdrop-blur-md border-b border-brand-border px-3 py-2.5 sm:px-6 sm:py-3 shadow-lg">
+    <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center space-x-2 shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-brand-emerald shrink-0">
+          <i data-lucide="video" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0 hidden sm:block">
+          <div class="flex items-center space-x-1.5">
+            <h1 class="text-sm sm:text-lg font-bold tracking-wider text-slate-100 flex items-center gap-1.5 truncate">
+              SHOOT FLOW <span class="text-[10px] sm:text-xs px-1 py-0.5 rounded bg-emerald-500/20 text-brand-emerald border border-emerald-500/30 font-mono font-normal">v1.07</span>
+            </h1>
+          </div>
+          <p class="text-[10px] sm:text-xs text-slate-400 truncate">影视防忘清单 • ADHD友好</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center space-x-1.5 shrink-0">
+        <button id="btn-projects" onclick="openProjectModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 transition active:scale-95">
+          <i data-lucide="folder-kanban" class="w-3.5 h-3.5 text-brand-cyan"></i>
+          <span id="current-project-label" class="max-w-[110px] sm:max-w-[160px] truncate font-medium">当前拍摄</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </button>
+
+        <button id="btn-toggle-minimal" onclick="toggleMinimalMode()" class="px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center space-x-1 transition active:scale-95 bg-brand-card hover:bg-brand-cardHover border-brand-border text-slate-200" title="切换极简/详细视图">
+          <span class="text-brand-amber">⚡</span>
+          <span id="minimal-mode-text" class="hidden xs:inline">极简</span>
+        </button>
+
+        <button onclick="openNewProjectModal()" class="p-1.5 rounded-lg bg-brand-emerald hover:bg-emerald-400 text-black font-semibold text-xs transition flex items-center space-x-1 sm:px-2.5 active:scale-95">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">新拍摄</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- OVERALL PROGRESS BAR -->
+    <div class="max-w-4xl mx-auto mt-3">
+      <div class="flex justify-between items-center text-xs mb-1.5">
+        <div class="flex items-center space-x-2">
+          <span class="font-mono text-brand-emerald font-bold" id="progress-percent">0%</span>
+          <span class="text-slate-400">全流程总进度</span>
+        </div>
+        <div class="flex items-center space-x-3 text-xs font-mono">
+          <span id="stats-checked" class="text-slate-300">0 / 0 已核对</span>
+          <span id="sync-status" class="flex items-center gap-1 text-slate-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 本地就绪
+          </span>
+        </div>
+      </div>
+      <div class="w-full h-2 rounded-full bg-brand-card border border-brand-border overflow-hidden p-0.5">
+        <div id="progress-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 transition-all duration-500 ease-out" style="width: 0%;"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 pt-6 space-y-4">
+
+    <!-- PROJECT INFO & QUICK STATS BANNER -->
+    <div id="project-banner" class="bg-brand-card border border-brand-border rounded-xl p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+      <div class="space-y-1 min-w-0">
+        <div class="flex items-center space-x-2">
+          <span class="px-2 py-0.5 text-[10px] sm:text-xs rounded bg-brand-border text-slate-300 font-mono shrink-0" id="project-date">2026.08.23</span>
+          <h2 class="text-base sm:text-lg font-bold text-slate-100 truncate" id="project-title-display">默认拍摄项目</h2>
+        </div>
+        <p class="text-xs text-slate-400 line-clamp-2 sm:line-clamp-none" id="project-desc-display">飞行员式逐项检查，杜绝忘带设备、漏报销、接口不匹配等惨痛教训。</p>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center space-x-2 shrink-0 pt-1 sm:pt-0">
+        <button onclick="copySummaryToClipboard()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-200 flex items-center space-x-1.5 transition active:scale-95">
+          <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
+          <span>复制复盘</span>
+        </button>
+        <button onclick="resetCurrentProject()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-300 hover:text-red-400 flex items-center space-x-1.5 transition active:scale-95">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>重置</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PHASE ACCORDION CONTAINER -->
+    <div id="phases-container" class="space-y-3">
+      <!-- Phases will be dynamically rendered here via JavaScript -->
+    </div>
+
+    <!-- BOTTOM FLOATING QUICK TIPS (ADHD HELPER) -->
+    <div id="adhd-tips-container" class="mt-8 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-start space-x-3">
+      <i data-lucide="sparkles" class="w-4 h-4 text-brand-amber shrink-0 mt-0.5"></i>
+      <div class="space-y-1">
+        <div class="font-semibold text-slate-200">ADHD 拍摄减负心法</div>
+        <p>1. 永远不要相信自己的“待会一定记得”，看到就立刻打勾或装包。<br>
+           2. 拍完当晚无论多累，至少把<b>发票截图存好</b>并<b>把机位卡备份第一遍</b>，次日你会感谢自己。</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: PROJECT SWITCH / MANAGE -->
+  <div id="project-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-md w-full p-4 sm:p-5 space-y-4 shadow-2xl max-h-[88vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-brand-border pb-3">
+        <h3 class="font-bold text-slate-100 flex items-center gap-2">
+          <i data-lucide="folder-kanban" class="w-4 h-4 text-brand-cyan"></i> 拍摄项目管理
+        </h3>
+        <button onclick="closeProjectModal()" class="text-slate-400 hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Project List -->
+      <div id="project-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="pt-2 border-t border-brand-border flex justify-between">
+        <button onclick="closeProjectModal(); openNewProjectModal();" class="px-3 py-2 rounded-lg bg-brand-emerald text-black font-semibold text-xs flex items-center space-x-1">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>新建拍摄项目</span>
+        </button>
+        <button onclick="closeProjectModal()" class="px-3 py-2 rounded-lg bg-brand-border text-slate-300 text-xs">
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW PROJECT -->
+  <div id="new-project-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-md w-full p-4 sm:p-5 space-y-4 shadow-2xl max-h-[88vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-brand-border pb-3">
+        <h3 class="font-bold text-slate-100 flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-brand-emerald"></i> 新建拍摄项目
+        </h3>
+        <button onclick="closeNewProjectModal()" class="text-slate-400 hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">项目名称 (例如: 董洁预告 / 淮海战役纪录片)</label>
+          <input type="text" id="input-new-project-name" placeholder="输入项目名称..." class="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-emerald">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">拍摄日期</label>
+          <input type="date" id="input-new-project-date" class="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-emerald">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">项目备注 / 核心客户</label>
+          <input type="text" id="input-new-project-desc" placeholder="例如: 双机位采访 + B-roll，客户独栋" class="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-emerald">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1 mt-2">自选包含阶段</label>
+          <div id="new-project-phases" class="grid grid-cols-2 gap-2 mt-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-brand-border flex justify-end space-x-2">
+        <button onclick="closeNewProjectModal()" class="px-3 py-2 rounded-lg bg-brand-border text-slate-300 text-xs">取消</button>
+        <button onclick="handleCreateProject()" class="px-4 py-2 rounded-lg bg-brand-emerald hover:bg-emerald-400 text-black font-semibold text-xs">创建并生成清单</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD CUSTOM ITEM -->
+  <div id="add-item-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-4 shadow-2xl max-h-[88vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-brand-border pb-3">
+        <h3 id="modal-item-title" class="font-bold text-slate-100 text-sm flex items-center gap-2">
+          <i data-lucide="list-plus" class="w-4 h-4 text-brand-cyan"></i>
+          <span>添加检查项</span>
+        </h3>
+        <button onclick="closeAddItemModal()" class="text-slate-400 hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <input type="hidden" id="add-item-phase-index">
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs text-slate-400">检查项内容</label>
+            <span class="text-[10px] text-brand-emerald font-medium">💡 支持回车拆分为多条</span>
+          </div>
+          <textarea id="input-item-content" rows="3" placeholder="输入事项内容...&#10;按回车可自动拆分为多个独立子项&#10;按 Cmd/Ctrl+回车 快速保存" class="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-emerald resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">分类标签 (选填，如: 相机 / 灯光)</label>
+          <input type="text" id="input-item-tag" placeholder="默认: 自定义" class="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-emerald">
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="input-item-critical" class="rounded bg-brand-bg border-brand-border text-red-500 focus:ring-red-500 w-4 h-4">
+          <label for="input-item-critical" class="text-xs text-red-400 font-bold">⚠️ 标记为致命高危项</label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="input-item-save-template" class="rounded bg-brand-bg border-brand-border text-brand-emerald focus:ring-0">
+          <label for="input-item-save-template" class="text-xs text-slate-300">保存为以后的通用模板项</label>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-brand-border flex justify-end space-x-2">
+        <button onclick="closeAddItemModal()" class="px-3 py-1.5 rounded-lg bg-brand-border text-slate-300 text-xs">取消</button>
+        <button onclick="handleSaveCustomItem()" class="px-4 py-1.5 rounded-lg bg-brand-emerald text-black font-semibold text-xs">添加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-brand-card border border-brand-border text-slate-100 text-xs px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 pointer-events-none">
+    <i data-lucide="check-circle" class="w-4 h-4 text-brand-emerald" id="toast-icon"></i>
+    <span id="toast-message">操作已成功</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // ==========================================
+    // 1. DEFAULT TEMPLATE DATA (Built from Flomo)
+    // ==========================================
+    const DEFAULT_PHASES = [
+      {
+        id: 'phase_brief',
+        code: '01 / BRIEF',
+        title: '接活与需求确认',
+        subtitle: '责任边界与意图对齐',
+        icon: 'file-text',
+        badge: '前期对齐',
+        description: '明确客户需求、人员配比、责任分工，杜绝模糊推诿。',
+        items: [
+          { text: '确认客户核心意图、拍摄风格与期望交付物', tag: '需求' },
+          { text: '核定档期时间、具体拍摄地点与大致时长', tag: '排期' },
+          { text: '确认报价预算、费用结算周期与首尾款约定', tag: '商务' },
+          { text: '明确责任边界与人员配置（谁是摄影/助理/灯光，谁负责录音）', tag: '人员' },
+          { text: '确认特殊限制（场地取电条件、停车位、进出通行证）', tag: '场地' }
+        ]
+      },
+      {
+        id: 'phase_preprod',
+        code: '02 / PRE-PROD',
+        title: '拍前准备与设备检查',
+        subtitle: '核心环节 ⭐ 杜绝漏带/接口不符',
+        icon: 'package-check',
+        badge: '重中之重',
+        description: 'flomo 复盘最高频翻车点：300c、Line线、接口型号、备用方案。',
+        items: [
+          { text: '主机位与辅机位机身 + 匹配镜头组清洁装箱', tag: '机身镜头' },
+          { text: '灯光设备装箱（主光/辅光/300c/气柱棒灯/反光板/格栅）', tag: '灯光' },
+          { text: '接口与音频兼容性测试（3.5mm line线 vs Type-C、Lark 150/Mic2）', tag: '音频接口' },
+          { text: '电源系统：所有V口电池、NP-F电池、机身电池充满，带足充电器与排插', tag: '电力' },
+          { text: '存储卡清空并格式化测试（主卡+副卡+读卡器+高速备份硬盘）', tag: '存储' },
+          { text: '备用方案 Plan B 确认（哪些让独栋/搭档带，哪些有替代线材）', tag: '容灾' },
+          { text: '分镜表 / 参考图 / 布光草图同步到手机相册或离线备查', tag: '方案' },
+          { text: '器材租赁提货/发货时间确认，并设置好闹钟提醒', tag: '租赁' },
+          { text: '提前确认出行方式（预定货拉拉/滴滴，保存好截图入口）', tag: '物流' }
+        ]
+      },
+      {
+        id: 'phase_departure',
+        code: '03 / DEPARTURE',
+        title: '出门前最后过包',
+        subtitle: '防丢三落四终极防线',
+        icon: 'truck',
+        badge: '出门前5分钟',
+        description: '离开家/工作室门前，对照实物最后眼过一遍。',
+        items: [
+          { text: '核心主机箱已锁扣（机身、镜头、监视器）', tag: '箱1' },
+          { text: '灯光脚架包与重型配件已点数装车', tag: '箱2' },
+          { text: '随身小包：存储卡盒、备用电池、耳机、胶带、镜头纸、常用工具钳', tag: '随身' },
+          { text: '确认已带身份证、场地通行证/门禁', tag: '证件' },
+          { text: '出发打车/货拉拉发票截图或订单号保存', tag: '记账' }
+        ]
+      },
+      {
+        id: 'phase_onset',
+        code: '04 / ON-SET',
+        title: '现场执行与监控',
+        subtitle: '视听质量与思维切换',
+        icon: 'camera',
+        badge: '拍摄中',
+        description: '现场多想一步：光比平衡、音频余量、镜头多样性。',
+        items: [
+          { text: '音频监听确认（耳机直插机身监听，留足 -12dB 余量防爆音）', tag: '音频' },
+          { text: '环境光比与顶光控制（避免盲目拉满功率，注意眼神光与阴影软硬）', tag: '布光' },
+          { text: '思维切换提醒：遇到特殊光影场景，思考是否需要补拍延时/慢门', tag: '视听' },
+          { text: '双机位景深与色温/画质参数统一匹配', tag: '色彩' },
+          { text: '每一卷（Roll）拍摄完成即时贴标，避免混淆已用/空卡', tag: '场记' }
+        ]
+      },
+      {
+        id: 'phase_wrap',
+        code: '05 / WRAP',
+        title: '收工与财务收尾',
+        subtitle: '核心环节 ⭐ 杜绝漏报销/忘记账',
+        icon: 'receipt',
+        badge: '收工当晚',
+        description: 'flomo 复盘血泪教训：只报了滴滴忘记货拉拉、器材应付款漏统计。',
+        items: [
+          { text: '【报销核对 1/5】滴滴/出租车发票与行程单导出', tag: '交通报销' },
+          { text: '【报销核对 2/5】货拉拉/同城货运发票截图与电子发票归集（极易遗漏！）', tag: '货运报销' },
+          { text: '【报销核对 3/5】工作餐/饮品/咖啡小票与付款截图', tag: '餐饮报销' },
+          { text: '【报销核对 4/5】异地差旅住宿/过桥过路停车费发票', tag: '差旅报销' },
+          { text: '【报销核对 5/5】第三方器材租赁发票与押金退还确认', tag: '租赁报销' },
+          { text: '统计器材公司应付账款（录入待付账本，支持多项目累计）', tag: '应付账款' },
+          { text: '客户交付进度跟踪与尾款收款节点标注', tag: '结算' },
+          { text: '当晚速记复盘（记录今日踩坑点、闪光点，同步到 flomo/Obsidian）', tag: '认知升级' }
+        ]
+      },
+      {
+        id: 'phase_archive',
+        code: '06 / ARCHIVE',
+        title: '资产归档与数据安全',
+        subtitle: '三备份与工程管理',
+        icon: 'database',
+        badge: '数字资产',
+        description: '素材完整校验、工程规范归档、安全清理原片。',
+        items: [
+          { text: '素材完成三备份（主工作盘 + 备份盘A + 归档冷盘B）', tag: 'DIT' },
+          { text: '机内 XML 元数据（陀螺仪/色彩空间）与代理文件完整性校验', tag: '元数据' },
+          { text: '格式化机身卡前，最后进行一次文件总大小与帧数校验', tag: '安全' },
+          { text: '后期工程模板建立与文件夹命名标准化（项目_日期_版本）', tag: '工程' }
+        ]
+      }
+    ];
+
+    // ==========================================
+    // 2. APP STATE & SUPABASE CLIENT
+    // ==========================================
+    const SUPABASE_URL = 'https://exirdowjmizyzbuwebgw.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4aXJkb3dqbWl6eXpidXdlYmd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3OTk5NDksImV4cCI6MjA4MzM3NTk0OX0.FTS0S7Mfnm5PFVVIA_k3IKPyp7bNAyyW47a7u6J_VUQ';
+    
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (e) {
+      console.warn('Supabase init skipped or offline:', e);
+    }
+
+    const STORAGE_KEY_PROJECTS = 'shootflow_projects_v1';
+    const STORAGE_KEY_CURRENT = 'shootflow_current_project_id';
+    const STORAGE_KEY_TEMPLATES = 'shootflow_custom_templates_v1';
+
+    let projects = [];
+    let currentProjectId = null;
+    let zenModePhase = null;
+    let isMinimalMode = localStorage.getItem('shootflow_minimal_mode') === 'true';
+    let minimalActivePhase = 0;
+    let currentActionPhase = null;
+    let currentActionItem = null;
+    let customTemplates = [];
+    let expandedPhases = { 0: true, 1: true, 2: false, 3: false, 4: false, 5: false };
+
+    // ==========================================
+    // 3. INITIALIZATION & DATA LOADING
+    // ==========================================
+    function initApp() {
+      try {
+      loadLocalData();
+      const contentTextarea = document.getElementById('input-item-content');
+      if (contentTextarea) {
+        contentTextarea.addEventListener('keydown', function(e) {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+            e.preventDefault();
+            handleSaveCustomItem();
+          }
+        });
+      }
+      
+      if (projects.length === 0) {
+        const defaultProj = createProjectObject('默认拍摄项目 (示例)', new Date().toISOString().split('T')[0], '标准化拍摄检查清单');
+        projects.push(defaultProj);
+        currentProjectId = defaultProj.id;
+        saveLocalData();
+      }
+
+      if (!currentProjectId && projects.length > 0) {
+        currentProjectId = projects[0].id;
+      }
+
+      renderUI();
+      
+      if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn(e); }
+      pullFromCloud();
+      } catch (e) {
+          alert('Error initializing app: ' + e.message);
+          console.error(e);
+      }
+    }
+
+    function createProjectObject(name, date, desc, selectedIndices) {
+      const projId = 'proj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      
+      const indices = selectedIndices || [0,1,2,3,4,5];
+      const phasesData = DEFAULT_PHASES.filter((_, idx) => indices.includes(idx)).map((phase, pIndex) => {
+        const items = phase.items.map((item, iIndex) => ({
+          id: `item_${pIndex}_${iIndex}_${Date.now()}`,
+          text: item.text,
+          tag: item.tag,
+          checked: false,
+          isCustom: false
+        }));
+
+        const templatesForPhase = customTemplates.filter(t => t.phaseIndex === pIndex);
+        templatesForPhase.forEach((t, tIndex) => {
+          items.push({
+            id: `item_custom_${pIndex}_${tIndex}_${Date.now()}`,
+            text: t.text,
+            tag: t.tag || '自定义',
+            checked: false,
+            isCustom: true
+          });
+        });
+
+        return {
+          id: phase.id,
+          code: phase.code,
+          title: phase.title,
+          subtitle: phase.subtitle,
+          icon: phase.icon,
+          badge: phase.badge,
+          description: phase.description,
+          items: items
+        };
+      });
+
+      return {
+        id: projId,
+        name: name || '新拍摄项目',
+        date: date || new Date().toISOString().split('T')[0],
+        desc: desc || '',
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        phases: phasesData
+      };
+    }
+
+    function loadLocalData() {
+      try {
+        let stored = localStorage.getItem(STORAGE_KEY_PROJECTS);
+        // Fallback for older versions
+        if (!stored) stored = localStorage.getItem('shootFlow_projects');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            projects = parsed;
+          }
+        }
+        
+        let currId = localStorage.getItem(STORAGE_KEY_CURRENT);
+        if (!currId) currId = localStorage.getItem('shootFlow_currentProjectId');
+        if (currId) {
+          currentProjectId = currId;
+        }
+
+        const storedTpl = localStorage.getItem(STORAGE_KEY_TEMPLATES);
+        if (storedTpl) {
+          try { customTemplates = JSON.parse(storedTpl); } catch(e){}
+        }
+      } catch (e) {
+        console.error('Failed to parse local storage data:', e);
+      }
+      if (!Array.isArray(projects)) {
+        projects = [];
+      }
+    }
+
+    function saveLocalData() {
+      try {
+        const timestamp = Date.now();
+        localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(projects));
+        localStorage.setItem(STORAGE_KEY_CURRENT, currentProjectId);
+        localStorage.setItem(STORAGE_KEY_TEMPLATES, JSON.stringify(customTemplates));
+        localStorage.setItem('shootflow_updated_at', timestamp);
+        if (typeof pushToCloud === 'function') pushToCloud(timestamp);
+      } catch (e) {
+        console.error('Failed to save local data:', e);
+      }
+    }
+
+    function getCurrentProject() {
+      return projects.find(p => p.id === currentProjectId) || projects[0];
+    }
+
+    // ==========================================
+    // 4. RENDERING & UI UPDATES
+    // ==========================================
+    
+    function toggleZenMode(pIndex) {
+      if (zenModePhase === pIndex) {
+        zenModePhase = null; // Exit Zen
+      } else {
+        zenModePhase = pIndex; // Enter Zen
+        expandedPhases[pIndex] = true; // ensure it's open
+      }
+      renderUI();
+    }
+
+    function toggleMinimalMode() {
+      isMinimalMode = !isMinimalMode;
+      localStorage.setItem('shootflow_minimal_mode', isMinimalMode);
+      renderUI();
+      showToast(isMinimalMode ? '⚡ 已切换为极简单阶段流' : '📋 已切换为完整流程视图');
+    }
+
+    function setMinimalActivePhase(idx) {
+      minimalActivePhase = idx;
+      renderUI();
+    }
+
+    function renderUI() {
+      const proj = getCurrentProject();
+      if (!proj) return;
+
+      document.getElementById('current-project-label').textContent = proj.name;
+      document.getElementById('project-title-display').textContent = proj.name;
+      document.getElementById('project-date').textContent = proj.date;
+      document.getElementById('project-desc-display').textContent = proj.desc || '拍摄全流程防遗忘检查单';
+
+      const minimalBtnText = document.getElementById('minimal-mode-text');
+      if (minimalBtnText) minimalBtnText.textContent = isMinimalMode ? '详细' : '极简';
+
+      const bannerEl = document.getElementById('project-banner');
+      const tipsEl = document.getElementById('adhd-tips-container');
+
+      const container = document.getElementById('phases-container');
+      container.innerHTML = '';
+
+      let totalItems = 0;
+      let totalChecked = 0;
+
+      // Calculate global counts first
+      proj.phases.forEach(phase => {
+        totalItems += phase.items.length;
+        totalChecked += phase.items.filter(i => i.checked).length;
+      });
+
+      // Update Overall Header Progress
+      const overallPercent = totalItems > 0 ? Math.round((totalChecked / totalItems) * 100) : 0;
+      document.getElementById('progress-percent').textContent = overallPercent + '%';
+      document.getElementById('stats-checked').textContent = `${totalChecked} / ${totalItems} 已核对`;
+      document.getElementById('progress-bar').style.width = overallPercent + '%';
+
+      const headerEl = document.querySelector('header');
+
+      // --- 1. ZEN MODE (FULL IMMERSION) ---
+      if (zenModePhase !== null) {
+        if (headerEl) headerEl.classList.add('hidden');
+        if (bannerEl) bannerEl.classList.add('hidden');
+        if (tipsEl) tipsEl.classList.add('hidden');
+
+        container.innerHTML = `
+          <div class="mb-4 flex items-center justify-between bg-brand-card p-3 rounded-xl border border-brand-border">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center animate-pulse">
+                <span>🎯</span>
+              </div>
+              <span class="text-sm font-bold text-brand-cyan tracking-widest">沉浸现场模式</span>
+            </div>
+            <button onclick="toggleZenMode(null)" class="px-4 py-1.5 rounded-lg bg-brand-emerald text-black text-xs font-bold hover:bg-emerald-400 transition active:scale-95">
+              退出沉浸
+            </button>
+          </div>
+        `;
+      } else {
+        if (headerEl) headerEl.classList.remove('hidden');
+      }
+
+      // --- 2. MINIMALIST MODE (THINGS 3 STYLE SINGLE-PHASE FLOW) ---
+      if (isMinimalMode && zenModePhase === null) {
+        if (bannerEl) bannerEl.classList.add('hidden');
+        if (tipsEl) tipsEl.classList.add('hidden');
+
+        if (minimalActivePhase >= proj.phases.length) minimalActivePhase = 0;
+        const currentPhase = proj.phases[minimalActivePhase];
+        const phaseTotal = currentPhase.items.length;
+        const phaseChecked = currentPhase.items.filter(i => i.checked).length;
+        const isComplete = phaseTotal > 0 && phaseChecked === phaseTotal;
+        const percent = phaseTotal > 0 ? Math.round((phaseChecked / phaseTotal) * 100) : 0;
+
+        // Render Horizontal Phase Pills Tabs + Current Phase Card
+        container.innerHTML = `
+          <!-- Horizontal Scrollable Tabs -->
+          <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar pb-1 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+            ${proj.phases.map((p, idx) => {
+              const pTotal = p.items.length;
+              const pChecked = p.items.filter(i => i.checked).length;
+              const pDone = pTotal > 0 && pChecked === pTotal;
+              const isActive = idx === minimalActivePhase;
+              return `
+                <button onclick="setMinimalActivePhase(${idx})" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center space-x-1.5 active:scale-95 ${
+                  isActive 
+                    ? 'bg-brand-emerald text-black font-bold shadow-lg shadow-emerald-500/20 scale-[1.02]' 
+                    : pDone
+                      ? 'bg-emerald-950/40 text-brand-emerald border border-emerald-500/30'
+                      : 'bg-brand-card text-slate-300 border border-brand-border hover:border-slate-600'
+                }">
+                  <span>${pDone ? '✓' : (idx + 1)}</span>
+                  <span>${p.title}</span>
+                  <span class="text-[10px] opacity-75 font-mono">(${pChecked}/${pTotal})</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- Active Phase Card (Ultra-Clean Things 3 style) -->
+          <div class="bg-brand-card/90 border border-brand-border rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-brand-border/60">
+              <div class="min-w-0 pr-2">
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs text-brand-dim font-mono">${currentPhase.code}</span>
+                  <span class="text-xs px-2 py-0.5 rounded font-mono ${isComplete ? 'bg-emerald-500/20 text-brand-emerald border border-emerald-500/30' : 'bg-brand-border text-slate-400'}">${currentPhase.badge}</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2">
+                  ${currentPhase.title}
+                  <span class="text-xs font-normal text-slate-400 hidden sm:inline">— ${currentPhase.subtitle}</span>
+                </h3>
+              </div>
+              <div class="text-right shrink-0 font-mono">
+                <span class="text-sm sm:text-base font-bold ${isComplete ? 'text-brand-emerald' : 'text-slate-200'}">${phaseChecked} / ${phaseTotal}</span>
+                <div class="text-[10px] text-slate-400">${percent}%</div>
+              </div>
+            </div>
+
+            <!-- Items List -->
+            <div class="divide-y divide-brand-border/40">
+              ${currentPhase.items.map((item, itemIndex) => `
+                <div class="py-3 sm:py-3.5 flex items-center justify-between group select-none active:bg-brand-cardHover/50 transition px-1 rounded-xl cursor-pointer" onclick="toggleItem(${minimalActivePhase}, ${itemIndex})">
+                  <div class="flex items-center space-x-3.5 flex-1 min-w-0 pr-2">
+                    <button onclick="event.stopPropagation(); toggleItem(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all shrink-0 active:scale-90 ${
+                      item.checked 
+                        ? 'bg-brand-emerald text-black border-brand-emerald shadow-[0_0_10px_rgba(16,185,129,0.3)]' 
+                        : (item.isCritical && !item.checked)
+                          ? 'border-red-500 bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
+                          : 'border-slate-500 bg-transparent hover:border-brand-emerald'
+                    }">
+                      ${item.checked ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-xs">⚠️</span>' : '')}
+                    </button>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center space-x-2">
+                        ${item.tag && item.tag !== '自定义' ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-bg border border-brand-border text-slate-400 font-mono shrink-0">${item.tag}</span>` : ''}
+                        <span class="text-sm sm:text-base font-medium leading-snug ${
+                          item.checked 
+                            ? 'text-slate-500 line-through' 
+                            : (item.isCritical ? 'text-red-400 font-bold' : 'text-slate-100')
+                        }">${item.text}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-1 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity ml-2 shrink-0">
+                    <button onclick="event.stopPropagation(); openEditItemModal(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-brand-cyan active:bg-brand-border/80 transition" title="编辑">
+                      <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button onclick="event.stopPropagation(); deleteItem(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-red-400 active:bg-brand-border/80 transition" title="删除">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="pt-3 flex justify-between items-center border-t border-brand-border/60">
+              <button onclick="openAddItemModal(${minimalActivePhase})" class="px-3.5 py-2 rounded-xl bg-brand-bg hover:bg-brand-border/60 border border-brand-border text-xs text-slate-300 hover:text-brand-emerald flex items-center space-x-1.5 transition active:scale-95 font-medium">
+                <i data-lucide="plus" class="w-4 h-4 text-brand-emerald"></i>
+                <span>添加事项</span>
+              </button>
+
+              <div class="flex items-center space-x-2">
+                ${minimalActivePhase < proj.phases.length - 1 ? `
+                  <button onclick="setMinimalActivePhase(${minimalActivePhase + 1})" class="px-3.5 py-2 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-brand-cyan flex items-center space-x-1 transition active:scale-95 font-medium">
+                    <span>下一阶段</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </button>
+                ` : `
+                  <button onclick="toggleArchiveProject('${proj.id}')" class="px-3.5 py-2 rounded-xl bg-brand-emerald text-black text-xs font-bold flex items-center space-x-1 transition active:scale-95">
+                    <i data-lucide="package-check" class="w-4 h-4"></i>
+                    <span>完结归档</span>
+                  </button>
+                `}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Floating Quick Tool Bar (Mobile friendly) -->
+          <div class="flex items-center justify-between pt-2">
+            <button onclick="copySummaryToClipboard()" class="px-3 py-1.5 rounded-lg bg-brand-card border border-brand-border text-xs text-slate-300 flex items-center space-x-1 transition active:scale-95">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
+              <span>复制复盘</span>
+            </button>
+            <button onclick="resetCurrentProject()" class="px-3 py-1.5 rounded-lg bg-brand-card border border-brand-border text-xs text-slate-400 hover:text-red-400 flex items-center space-x-1 transition active:scale-95">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>重置勾选</span>
+            </button>
+          </div>
+        `;
+
+        if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn(e); }
+        return;
+      }
+
+      // --- 3. DETAILED ACCORDION VIEW (STANDARD) ---
+      if (bannerEl) bannerEl.classList.remove('hidden');
+      if (tipsEl) tipsEl.classList.remove('hidden');
+
+      proj.phases.forEach((phase, phaseIndex) => {
+        if (zenModePhase !== null && zenModePhase !== phaseIndex) return;
+        const phaseTotal = phase.items.length;
+        const phaseChecked = phase.items.filter(i => i.checked).length;
+
+        const isComplete = phaseTotal > 0 && phaseChecked === phaseTotal;
+        const isExpanded = expandedPhases[phaseIndex] !== undefined ? expandedPhases[phaseIndex] : (phaseIndex === 0 || !isComplete);
+        const percent = phaseTotal > 0 ? Math.round((phaseChecked / phaseTotal) * 100) : 0;
+
+        const card = document.createElement('div');
+        card.id = `phase-card-${phaseIndex}`;
+        card.className = `rounded-2xl border transition-all duration-300 overflow-hidden ${
+          isComplete 
+            ? 'bg-brand-card/70 border-emerald-500/30' 
+            : 'bg-brand-card border-brand-border hover:border-slate-700'
+        }`;
+
+        card.innerHTML = `
+          <div class="p-4 sm:p-5 cursor-pointer select-none flex items-center justify-between transition-colors ${
+            isComplete ? 'bg-emerald-950/20' : 'bg-brand-card'
+          }" onclick="togglePhase(${phaseIndex})">
+            
+            <div class="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
+                isComplete
+                  ? 'bg-emerald-500/20 text-brand-emerald border-emerald-500/40 glow-emerald'
+                  : phaseChecked > 0
+                    ? 'bg-amber-500/10 text-brand-amber border-amber-500/30'
+                    : 'bg-brand-bg text-slate-400 border-brand-border'
+              }">
+                <i data-lucide="${isComplete ? 'check' : phase.icon || 'circle'}" class="w-4 h-4"></i>
+              </div>
+
+              <div class="flex-1 min-w-0 pr-2">
+                <div class="flex items-center space-x-2">
+                  <span class="font-mono text-xs text-brand-dim">${phase.code}</span>
+                  <span class="text-xs px-2 py-0.5 rounded font-mono ${
+                    isComplete 
+                      ? 'bg-emerald-500/20 text-brand-emerald border border-emerald-500/30' 
+                      : 'bg-brand-border text-slate-400'
+                  }">${phase.badge}</span>
+                </div>
+                <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2">
+                  ${phase.title}
+                  <span class="text-xs font-normal text-slate-400 hidden sm:inline">— ${phase.subtitle}</span>
+                </h3>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+              <div class="text-right">
+                <div class="text-xs font-mono font-semibold ${isComplete ? 'text-brand-emerald' : 'text-slate-300'}">
+                  ${phaseChecked} / ${phaseTotal}
+                </div>
+                <div class="text-[10px] text-slate-500 font-mono">${percent}%</div>
+              </div>
+              ${zenModePhase === null ? `<button onclick="event.stopPropagation(); toggleZenMode(${phaseIndex})" class="px-2.5 py-1 text-[10px] rounded bg-brand-bg border border-brand-border hover:border-brand-cyan text-brand-cyan font-bold transition mr-1 sm:mr-3 shadow-lg flex items-center gap-1 active:scale-95">🎯 专注</button>` : ''}
+              <div class="w-6 h-6 rounded-lg bg-brand-bg flex items-center justify-center text-slate-400 border border-brand-border transition-transform ${isExpanded ? 'rotate-180' : ''}">
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="${isExpanded ? 'block' : 'hidden'} border-t border-brand-border/60 bg-brand-bg/40 p-4 sm:p-5 space-y-3">
+            <p class="text-xs text-slate-400 italic mb-2">${phase.description}</p>
+            
+            <div class="space-y-2">
+              ${phase.items.map((item, itemIndex) => `
+                <div class="group flex items-center space-x-3 p-3 sm:p-2.5 rounded-xl transition-all border active:bg-brand-cardHover ${
+                  item.checked 
+                    ? 'bg-brand-card/40 border-transparent hover:border-brand-border' 
+                    : 'bg-brand-card border-brand-border hover:border-slate-600'
+                }">
+                  
+                  <button onclick="toggleItem(${phaseIndex}, ${itemIndex})" class="w-6 h-6 sm:w-5 sm:h-5 rounded-lg flex items-center justify-center border transition-all shrink-0 active:scale-90 ${
+                    item.checked 
+                      ? 'bg-brand-emerald text-black border-brand-emerald glow-emerald' 
+                      : (item.isCritical && !item.checked)
+                        ? 'border-red-500 bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
+                        : 'border-slate-500 bg-brand-bg hover:border-brand-emerald'
+                  }">
+                    ${item.checked ? '<i data-lucide="check" class="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-[11px] sm:text-[10px]">⚠️</span>' : '')}
+                  </button>
+
+                  <div class="flex-1 min-w-0 cursor-pointer select-none" onclick="toggleItem(${phaseIndex}, ${itemIndex})">
+                    <div class="flex items-center space-x-2">
+                      <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-brand-bg border border-brand-border text-slate-400 font-mono shrink-0">
+                        ${item.tag || '检查'}
+                      </span>
+                      <span class="text-xs sm:text-sm font-medium ${(item.isCritical && !item.checked) ? 'text-red-400 font-bold' : 'text-slate-200'} item-text leading-snug ${item.checked ? 'checked-text' : ''}">
+                        ${item.text}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex space-x-1 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity ml-1.5 shrink-0">
+                    <button onclick="event.stopPropagation(); openEditItemModal(${phaseIndex}, ${itemIndex})" class="w-7 h-7 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-brand-cyan active:bg-brand-border/80 transition" title="编辑">
+                      <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button onclick="event.stopPropagation(); deleteItem(${phaseIndex}, ${itemIndex})" class="w-7 h-7 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-red-400 active:bg-brand-border/80 transition" title="删除">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button onclick="openAddItemModal(${phaseIndex})" class="px-3 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-300 hover:text-brand-emerald flex items-center space-x-1 transition active:scale-95">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>添加本阶段事项</span>
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Bottom archive button in detailed mode
+      if (zenModePhase === null) {
+        if (proj.status === 'archived') {
+          container.innerHTML += `
+            <div class="mt-8 text-center">
+              <button onclick="toggleArchiveProject('${proj.id}')" class="px-6 py-2.5 rounded-lg bg-brand-card border border-brand-border hover:border-brand-cyan hover:text-brand-cyan text-slate-400 text-sm font-semibold transition group flex items-center justify-center mx-auto space-x-2">
+                <i data-lucide="archive-restore" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                <span>取消归档并恢复为活跃项目</span>
+              </button>
+            </div>
+          `;
+        } else {
+          container.innerHTML += `
+            <div class="mt-8 text-center">
+              <button onclick="toggleArchiveProject('${proj.id}')" class="px-6 py-2.5 rounded-lg bg-brand-card border border-brand-border hover:border-brand-emerald hover:text-brand-emerald text-slate-400 text-sm font-semibold transition group flex items-center justify-center mx-auto space-x-2">
+                <i data-lucide="package-check" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                <span>完结并归档项目</span>
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn(e); }
+    }
+
+    // ==========================================
+    // 5. USER ACTIONS & INTERACTION
+    // ==========================================
+    function togglePhase(phaseIndex) {
+      const proj = getCurrentProject();
+      if (expandedPhases[phaseIndex]) {
+        // Trying to collapse
+        const criticalUnchecked = proj.phases[phaseIndex].items.filter(i => i.isCritical && !i.checked);
+        if (criticalUnchecked.length > 0) {
+          showToast('⚠️ 致命高危项未确认，禁止收起！');
+          const card = document.getElementById(`phase-card-${phaseIndex}`);
+          if (card) {
+            card.classList.add('animate-shake');
+            setTimeout(() => card.classList.remove('animate-shake'), 400);
+          }
+          return;
+        }
+      }
+      expandedPhases[phaseIndex] = !expandedPhases[phaseIndex];
+      renderUI();
+    }
+
+    function toggleItem(phaseIndex, itemIndex) {
+      const proj = getCurrentProject();
+      if (!proj || !proj.phases[phaseIndex] || !proj.phases[phaseIndex].items[itemIndex]) return;
+
+      const item = proj.phases[phaseIndex].items[itemIndex];
+      item.checked = !item.checked;
+
+      const phase = proj.phases[phaseIndex];
+      const allChecked = phase.items.every(i => i.checked);
+      if (allChecked && item.checked) {
+        triggerConfetti();
+        showToast(`🎉 阶段完成: ${phase.title}`);
+        
+        if (phaseIndex + 1 < proj.phases.length) {
+          expandedPhases[phaseIndex + 1] = true;
+        }
+      }
+
+      saveLocalData();
+      renderUI();
+    }
+
+    function deleteItem(phaseIndex, itemIndex) {
+      const proj = getCurrentProject();
+      if (!proj) return;
+      proj.phases[phaseIndex].items.splice(itemIndex, 1);
+      saveLocalData();
+      renderUI();
+      showToast('已移除条目');
+    }
+
+    function resetCurrentProject() {
+      if (!confirm('确定要重置当前项目的所有勾选状态吗？')) return;
+      const proj = getCurrentProject();
+      if (!proj) return;
+
+      proj.phases.forEach(phase => {
+        phase.items.forEach(item => {
+          item.checked = false;
+        });
+      });
+
+      saveLocalData();
+      renderUI();
+      showToast('已重置所有打勾状态');
+    }
+
+    // ==========================================
+    // 6. CUSTOM ITEMS & TEMPLATES
+    // ==========================================
+    function openAddItemModal(phaseIndex) {
+      currentActionItem = null;
+      document.getElementById('add-item-phase-index').value = phaseIndex;
+      document.getElementById('input-item-content').value = '';
+      if (document.getElementById('input-item-tag')) document.getElementById('input-item-tag').value = '';
+      document.getElementById('input-item-save-template').checked = false;
+      if (document.getElementById('input-item-critical')) document.getElementById('input-item-critical').checked = false;
+      document.getElementById('modal-item-title').innerHTML = '<i data-lucide="list-plus" class="w-4 h-4 text-brand-cyan"></i><span>添加检查项</span>';
+      document.getElementById('add-item-modal').classList.remove('hidden');
+      document.getElementById('add-item-modal').classList.add('flex');
+      setTimeout(() => document.getElementById('input-item-content').focus(), 50);
+    }
+
+    function openEditItemModal(phaseIndex, itemIndex) {
+      const proj = getCurrentProject();
+      if (!proj) return;
+      currentActionItem = itemIndex;
+      document.getElementById('add-item-phase-index').value = phaseIndex;
+      const item = proj.phases[phaseIndex].items[itemIndex];
+      document.getElementById('input-item-content').value = item.text;
+      if (document.getElementById('input-item-tag')) document.getElementById('input-item-tag').value = item.tag || '';
+      document.getElementById('input-item-save-template').checked = false;
+      if (document.getElementById('input-item-critical')) document.getElementById('input-item-critical').checked = !!item.isCritical;
+      
+      document.getElementById('modal-item-title').innerHTML = '<i data-lucide="edit-2" class="w-4 h-4 text-brand-cyan"></i><span>编辑检查项</span>';
+      document.getElementById('add-item-modal').classList.remove('hidden');
+      document.getElementById('add-item-modal').classList.add('flex');
+      setTimeout(() => document.getElementById('input-item-content').focus(), 50);
+    }
+
+    function closeAddItemModal() {
+      document.getElementById('add-item-modal').classList.add('hidden');
+      document.getElementById('add-item-modal').classList.remove('flex');
+    }
+
+    function handleSaveCustomItem() {
+      const phaseIndex = parseInt(document.getElementById('add-item-phase-index').value);
+      const rawText = document.getElementById('input-item-content').value;
+      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+      let tag = '自定义';
+      if (document.getElementById('input-item-tag') && document.getElementById('input-item-tag').value.trim()) {
+        tag = document.getElementById('input-item-tag').value.trim();
+      }
+      
+      const saveAsTemplate = document.getElementById('input-item-save-template').checked;
+      const critEl = document.getElementById('input-item-critical');
+      const isCritical = critEl ? critEl.checked : false;
+
+      if (lines.length === 0) {
+        alert('请输入检查项内容');
+        return;
+      }
+
+      const proj = getCurrentProject();
+      if (!proj || !proj.phases[phaseIndex]) return;
+
+      if (currentActionItem !== null) {
+        // Edit mode: update current item with line 0, insert remaining lines immediately below
+        proj.phases[phaseIndex].items[currentActionItem].text = lines[0];
+        proj.phases[phaseIndex].items[currentActionItem].tag = tag;
+        proj.phases[phaseIndex].items[currentActionItem].isCritical = isCritical;
+
+        if (lines.length > 1) {
+          const newSplittedItems = lines.slice(1).map((lineText, idx) => ({
+            id: `item_custom_${phaseIndex}_${Date.now()}_${idx}`,
+            text: lineText,
+            tag: tag,
+            checked: false,
+            isCustom: true,
+            isCritical: isCritical
+          }));
+          proj.phases[phaseIndex].items.splice(currentActionItem + 1, 0, ...newSplittedItems);
+        }
+
+        if (saveAsTemplate) {
+          lines.forEach(text => customTemplates.push({ phaseIndex, text, tag }));
+        }
+      } else {
+        // Add mode: create an item for each line
+        const newItems = lines.map((lineText, idx) => ({
+          id: `item_custom_${phaseIndex}_${Date.now()}_${idx}`,
+          text: lineText,
+          tag: tag,
+          checked: false,
+          isCustom: true,
+          isCritical: isCritical
+        }));
+        proj.phases[phaseIndex].items.push(...newItems);
+
+        if (saveAsTemplate) {
+          lines.forEach(text => customTemplates.push({ phaseIndex, text, tag }));
+        }
+      }
+
+      saveLocalData();
+      closeAddItemModal();
+      renderUI();
+      
+      const countMsg = lines.length > 1 ? `已拆分添加 ${lines.length} 条事项` : (currentActionItem !== null ? '已保存修改' : '已添加事项');
+      showToast(countMsg);
+    }
+
+    // ==========================================
+    // 7. PROJECT MANAGEMENT (NEW / SWITCH / DELETE)
+    // ==========================================
+    function openProjectModal() {
+      renderProjectList();
+      document.getElementById('project-modal').classList.remove('hidden');
+      document.getElementById('project-modal').classList.add('flex');
+    }
+
+    function closeProjectModal() {
+      document.getElementById('project-modal').classList.add('hidden');
+      document.getElementById('project-modal').classList.remove('flex');
+    }
+
+    
+    function toggleArchiveProject(id) {
+      const proj = projects.find(p => p.id === id);
+      if (!proj) return;
+      proj.isArchived = !proj.isArchived;
+      saveLocalData();
+      renderUI();
+      renderProjectList();
+      showToast(proj.isArchived ? '项目已归档' : '项目已重新开启');
+    }
+
+    function renderProjectList() {
+      const list = document.getElementById('project-list');
+      list.innerHTML = '';
+
+      projects.forEach(p => {
+        let checkedCount = 0;
+        let totalCount = 0;
+        p.phases.forEach(ph => {
+          checkedCount += ph.items.filter(i => i.checked).length;
+          totalCount += ph.items.length;
+        });
+        const pct = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+        const isCurrent = p.id === currentProjectId;
+
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-xl border flex items-center justify-between cursor-pointer transition ${
+          isCurrent 
+            ? 'bg-emerald-500/10 border-emerald-500/40 text-slate-100' 
+            : 'bg-brand-bg border-brand-border hover:border-slate-600 text-slate-300'
+        }`;
+
+        item.innerHTML = `
+          <div class="flex-1 min-w-0 pr-2" onclick="selectProject('${p.id}')">
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-sm truncate">${p.name}</span>
+              ${isCurrent ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-emerald text-black font-semibold">当前</span>' : ''}
+            </div>
+            <div class="flex items-center space-x-2 text-xs text-slate-500 mt-0.5">
+              <span>${p.date}</span>
+              <span>•</span>
+              <span class="font-mono">${checkedCount}/${totalCount} (${pct}%)</span>
+            </div>
+          </div>
+          
+          ${projects.length > 1 ? `
+            <button onclick="event.stopPropagation(); deleteProject('${p.id}')" class="p-1.5 text-slate-500 hover:text-red-400 transition">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          ` : ''}
+        `;
+
+        list.appendChild(item);
+      });
+
+
+      if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e) { console.warn(e); }
+    }
+
+    function selectProject(id) {
+      currentProjectId = id;
+      saveLocalData();
+      closeProjectModal();
+      renderUI();
+    }
+
+    function deleteProject(id) {
+      if (!confirm('确定要删除这个拍摄项目吗？')) return;
+      projects = projects.filter(p => p.id !== id);
+      if (currentProjectId === id) {
+        currentProjectId = projects[0] ? projects[0].id : null;
+      }
+      saveLocalData();
+      renderProjectList();
+      renderUI();
+      showToast('已删除项目');
+    }
+
+    function openNewProjectModal() {
+      document.getElementById('input-new-project-name').value = '';
+      document.getElementById('input-new-project-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('input-new-project-desc').value = '';
+      document.getElementById('new-project-modal').classList.remove('hidden');
+      document.getElementById('new-project-modal').classList.add('flex');
+      const phasesContainer = document.getElementById('new-project-phases');
+      phasesContainer.innerHTML = '';
+      DEFAULT_PHASES.forEach((phase, idx) => {
+        phasesContainer.innerHTML += `
+          <label class="flex items-center space-x-2 text-sm text-slate-300 cursor-pointer bg-brand-bg px-2 py-1.5 rounded border border-brand-border hover:border-brand-dim transition">
+            <input type="checkbox" value="${idx}" checked class="rounded border-slate-600 bg-brand-card text-brand-emerald focus:ring-brand-emerald focus:ring-offset-brand-bg w-4 h-4">
+            <span class="truncate">${phase.title}</span>
+          </label>
+        `;
+      });
+      document.getElementById('input-new-project-name').focus();
+    }
+
+    function closeNewProjectModal() {
+      document.getElementById('new-project-modal').classList.add('hidden');
+      document.getElementById('new-project-modal').classList.remove('flex');
+    }
+
+    function handleCreateProject() {
+      const name = document.getElementById('input-new-project-name').value.trim();
+      const date = document.getElementById('input-new-project-date').value;
+      const desc = document.getElementById('input-new-project-desc').value.trim();
+
+      if (!name) {
+        alert('请输入项目名称');
+        return;
+      }
+
+      const selectedIndices = [];
+      document.querySelectorAll('#new-project-phases input[type="checkbox"]').forEach(chk => {
+        if (chk.checked) selectedIndices.push(parseInt(chk.value));
+      });
+      if (selectedIndices.length === 0) {
+        alert('请至少选择一个阶段');
+        return;
+      }
+      const newProj = createProjectObject(name, date, desc, selectedIndices);
+      projects.unshift(newProj);
+      currentProjectId = newProj.id;
+
+      expandedPhases = { 0: true, 1: true, 2: false, 3: false, 4: false, 5: false };
+
+      saveLocalData();
+      closeNewProjectModal();
+      renderUI();
+      showToast(`🎬 新拍摄已创建: ${name}`);
+    }
+
+    // ==========================================
+    // 8. EXPORT SUMMARY (FOR FLOMO / WECHAT)
+    // ==========================================
+    function copySummaryToClipboard() {
+      const proj = getCurrentProject();
+      if (!proj) return;
+
+      let summaryText = `🎬 【拍摄复盘 & 核对】${proj.name} (${proj.date})\n\n`;
+
+      proj.phases.forEach(phase => {
+        const checked = phase.items.filter(i => i.checked);
+        const unchecked = phase.items.filter(i => !i.checked);
+
+        summaryText += `📌 ${phase.title} [${checked.length}/${phase.items.length}]\n`;
+        
+        if (unchecked.length > 0) {
+          summaryText += `  ⚠️ 待办/未完成:\n`;
+          unchecked.forEach(item => {
+            summaryText += `    - [ ] ${item.text}\n`;
+          });
+        }
+        if (checked.length > 0) {
+          summaryText += `  ✅ 已核验:\n`;
+          checked.forEach(item => {
+            summaryText += `    - [x] ${item.text}\n`;
+          });
+        }
+        summaryText += `\n`;
+      });
+
+      summaryText += `#复盘 #拍摄工作流 #丢三落四防范\nGenerated by Shoot Flow`;
+
+      navigator.clipboard.writeText(summaryText).then(() => {
+        showToast('📋 已复制复盘文本到剪贴板！');
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        showToast('复制失败，请重试');
+      });
+    }
+
+    // ==========================================
+    // 9. SUPABASE BACKGROUND SYNC (OPTIONAL/ENHANCED)
+    // ==========================================
+    async function pullFromCloud() {
+      if (!supabaseClient) { try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){} } if (!supabaseClient) return;
+      const statusEl = document.getElementById('sync-status');
+      if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 检查云端...`;
+      
+      try {
+        const { data, error } = await supabaseClient.from('shoot_workspace').select('*').eq('id', 'default_workspace').single();
+        if (error) throw error;
+        if (data) {
+          const localTime = parseInt(localStorage.getItem('shootflow_updated_at') || '0');
+          if (data.updated_at > localTime) {
+            const cloudData = data.data;
+            projects = cloudData.projects || [];
+            customTemplates = cloudData.customTemplates || [];
+            currentProjectId = cloudData.currentProjectId || null;
+            
+            localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(projects));
+            localStorage.setItem(STORAGE_KEY_CURRENT, currentProjectId);
+            localStorage.setItem(STORAGE_KEY_TEMPLATES, JSON.stringify(customTemplates));
+            localStorage.setItem('shootflow_updated_at', data.updated_at);
+            
+            renderProjectList();
+            renderUI();
+            if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400"></span> 已拉取最新数据`;
+          } else if (data.updated_at < localTime) {
+            pushToCloud(localTime);
+          } else {
+            if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> 本地数据最新`;
+          }
+        }
+      } catch (e) {
+        console.log('Sync pull failed', e);
+        if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> 本地离线就绪`;
+        const localTime = parseInt(localStorage.getItem('shootflow_updated_at') || '0');
+        if (localTime > 0) pushToCloud(localTime);
+      }
+    }
+
+    let syncTimeout = null;
+    function pushToCloud(timestamp) {
+      if (!supabaseClient) return;
+      if (syncTimeout) clearTimeout(syncTimeout);
+      
+      const statusEl = document.getElementById('sync-status');
+      if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 同步中...`;
+      
+      syncTimeout = setTimeout(async () => {
+        const payload = { projects, customTemplates, currentProjectId };
+        try {
+          const { error } = await supabaseClient.from('shoot_workspace').upsert({
+            id: 'default_workspace',
+            data: payload,
+            updated_at: timestamp
+          });
+          if (error) throw error;
+          if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-cyan-400"></span> 云端已同步`;
+        } catch (e) {
+          console.log('Sync push failed', e);
+          if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-400"></span> 同步失败: ` + (e.message || '未知错误');
+        }
+      }, 1500);
+    }
+
+    // ==========================================
+    // 10. UTILITIES (TOAST & CONFETTI)
+    // ==========================================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.textContent = msg;
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.8 },
+          colors: ['#10B981', '#06B6D4', '#F59E0B']
+        });
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
