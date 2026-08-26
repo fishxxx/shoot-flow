@@ -41,7 +41,7 @@
               amberGlow: 'rgba(30, 75, 215, 0.2)',
               cyan: '#D71E1E',        
               red: '#D71E1E',
-              dim: '#888888'          // Mid Grey
+              dim: '#B3B3B3'          // High-contrast Dim
             }
           },
           fontFamily: {
@@ -55,6 +55,11 @@
   </script>
 
   <!-- Vendor Plugins: Local First with Fallbacks -->
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+  </style>
   <script src="lib_lucide.js"></script>
   <script>
     if (typeof lucide === 'undefined') {
@@ -365,7 +370,7 @@
           2. 永远不要相信自己的“待会一定记得”，看到就立刻打勾或装包。<br>
           3. 拍完当晚无论多累，至少把<b>发票截图存好</b>并<b>把机位卡备份第一遍</b>，次日你会感谢自己。
         </p>
-        <p class="mt-2 pt-2 border-t border-slate-800/50 text-[10px] text-brand-dim/60 font-mono tracking-wide">SHOOT FLOW v1.07 · Local-First PWA</p>
+        <p class="mt-2 pt-2 border-t border-white text-[10px] text-brand-dim font-mono tracking-wide">SHOOT FLOW v1.07 · Local-First PWA</p>
       </div>
     </div>
 
@@ -462,7 +467,7 @@
       </div>
 
       <!-- Custom Templates Management Section -->
-      <div class="pt-2 border-t border-white/60">
+      <div class="pt-2 border-t border-white">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs text-brand-dim font-semibold flex items-center gap-1">
             <i data-lucide="layout-template" class="w-3.5 h-3.5 text-brand-cyan"></i>
@@ -628,7 +633,7 @@
           <label class="block text-xs text-brand-dim mb-1">同步密钥 / 密码 (区分大小写)</label>
           <input type="text" id="input-sync-key" placeholder="例如: pengpeng" class="w-full bg-brand-bg border border-white rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-emerald">
         </div>
-        <div class="p-3 rounded-none bg-brand-bg border border-white/60 text-xs text-brand-dim space-y-1.5">
+        <div class="p-3 rounded-none bg-brand-bg border border-white text-xs text-brand-dim space-y-1.5">
           <div class="text-white font-semibold flex items-center gap-1.5">
             <span>💡</span> 多端同步规则：
           </div>
@@ -649,7 +654,7 @@
       </div>
 
       
-        <div class="p-3 rounded-none bg-brand-bg border border-white/60 text-xs text-white space-y-2">
+        <div class="p-3 rounded-none bg-brand-bg border border-white text-xs text-white space-y-2">
           <div class="font-semibold flex items-center justify-between">
             <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-brand-emerald"></i> 访问安全保护</span>
             <button type="button" onclick="closeSyncKeyModal(); handleManualLock();" class="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition">🔒 立即锁定</button>
@@ -689,7 +694,7 @@
       </div>
 
       <!-- THE CAPTURABLE SWISS POSTER CONTAINER -->
-      <div class="overflow-x-auto p-1 max-h-[65vh] overflow-y-auto rounded-none bg-black/40 border border-white/40">
+      <div class="overflow-x-auto p-1 max-h-[65vh] overflow-y-auto rounded-none bg-black/40 border border-white">
         <div id="swiss-poster-card" class="poster-dark p-6 sm:p-8 rounded-none border max-w-lg mx-auto font-sans shadow-[8px_8px_0_0_rgba(255,255,255,1)] relative overflow-hidden space-y-5" style="width: 100%; min-width: 320px;">
           
           <!-- Background Grid Texture -->
@@ -1330,7 +1335,7 @@
                     <div class="flex items-center space-x-2">
                       <span class="px-2 py-0.5 rounded bg-brand-border text-white font-mono text-xs font-bold shrink-0">${r.date}</span>
                       <h4 class="text-sm sm:text-base font-bold text-white truncate">${r.projectName || '常规外拍'}</h4>
-                      ${r.location ? `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-brand-dim text-[10px]">${r.location}</span>` : ''}
+                      ${r.location ? `<span class="px-1.5 py-0.5 rounded bg-black text-brand-dim text-[10px]">${r.location}</span>` : ''}
                     </div>
                     ${r.notes ? `<p class="text-xs text-brand-amber flex items-center gap-1 font-medium"><i data-lucide="info" class="w-3.5 h-3.5 shrink-0"></i> ${r.notes}</p>` : ''}
                   </div>
@@ -1396,7 +1401,7 @@
                   </div>
                   
                   <div class="flex items-center space-x-1.5">
-                    <button onclick="togglePaStatus('${p.id}')" class="px-2.5 py-1 rounded-none text-xs font-medium transition active:scale-95 ${isPending ? 'bg-emerald-500/20 text-brand-emerald border border-emerald-500/30 hover:bg-emerald-500/30' : 'bg-slate-800 text-white hover:bg-slate-700'}">
+                    <button onclick="togglePaStatus('${p.id}')" class="px-2.5 py-1 rounded-none text-xs font-medium transition active:scale-95 ${isPending ? 'bg-emerald-500/20 text-brand-emerald border border-emerald-500/30 hover:bg-emerald-500/30' : 'bg-black text-white hover:bg-black'}">
                       ${isPending ? '标记已结' : '重设为待结'}
                     </button>
                     <button onclick="openEditPaModal('${p.id}')" class="p-1.5 rounded-none bg-brand-border/60 hover:bg-brand-border text-white transition active:scale-95" title="编辑">
@@ -2157,8 +2162,8 @@
                   isActive 
                     ? 'bg-white text-black font-bold shadow-[0_0_15px_rgba(255,255,255,0.2)] scale-[1.02]' 
                     : pDone
-                      ? 'bg-white/10 text-white border border-white/5'
-                      : 'bg-transparent text-brand-dim border border-white/5 hover:border-white/20'
+                      ? 'bg-black text-white border border-white'
+                      : 'bg-transparent text-brand-dim border border-white hover:border-white'
                 }">
                   <span>${pDone ? '✓' : (idx + 1)}</span>
                   <span>${p.title}</span>
@@ -2169,15 +2174,15 @@
           </div>
 
           <!-- Active Phase Card (Ultra-Clean Things 3 style) -->
-          <div class="bg-black border border-white/5 rounded-none p-4 sm:p-6 space-y-4 shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
-            <div class="flex items-center justify-between pb-3 border-b border-white/5">
+          <div class="bg-black border border-white rounded-none p-4 sm:p-6 space-y-4 shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
+            <div class="flex items-center justify-between pb-3 border-b border-white">
               <div class="min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
                   <span class="text-xs font-bold font-mono text-white tracking-wider">${currentPhase.code}</span>
                   <span class="text-xs px-2.5 py-0.5 rounded-none font-semibold tracking-wide border ${
                     isComplete 
-                      ? 'bg-white/10 text-white border-white/20' 
-                      : 'bg-white/5 text-white border-white/5'
+                      ? 'bg-black text-white border-white' 
+                      : 'bg-black text-white border-white'
                   }">${currentPhase.badge}</span>
                 </div>
                 <h3 class="text-base sm:text-lg font-bold text-white truncate mt-0.5 flex items-center gap-2 tracking-tight">
@@ -2195,14 +2200,14 @@
             <!-- Items List -->
             <div class="divide-y divide-white/5">
               ${currentPhase.items.map((item, itemIndex) => `
-                <div class="py-3 sm:py-3.5 flex items-center justify-between group select-none hover:bg-white/5 active:bg-white/10 transition px-2 -mx-2 rounded-none cursor-pointer" onclick="toggleItem(${minimalActivePhase}, ${itemIndex})">
+                <div class="py-3 sm:py-3.5 flex items-center justify-between group select-none hover:bg-black active:bg-black transition px-2 -mx-2 rounded-none cursor-pointer" onclick="toggleItem(${minimalActivePhase}, ${itemIndex})">
                   <div class="flex items-center space-x-3.5 flex-1 min-w-0 pr-2">
                     <button onclick="event.stopPropagation(); toggleItem(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-full flex items-center justify-center border transition-all shrink-0 active:scale-90 ${
                       item.checked 
                         ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]' 
                         : (item.isCritical && !item.checked)
                           ? 'border-brand-red bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
-                          : 'border-white/20 bg-transparent hover:border-white'
+                          : 'border-white bg-transparent hover:border-white'
                     }">
                       ${item.checked ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-xs">⚠️</span>' : '')}
                     </button>
@@ -2237,7 +2242,7 @@
             </div>
 
             <!-- Footer Actions -->
-            <div class="pt-3 flex justify-between items-center border-t border-white/60">
+            <div class="pt-3 flex justify-between items-center border-t border-white">
               <button onclick="openAddItemModal(${minimalActivePhase})" class="px-3.5 py-2 rounded-none bg-brand-bg hover:bg-brand-border/60 border border-white text-xs text-white hover:text-brand-emerald flex items-center space-x-1.5 transition active:scale-95 font-medium">
                 <i data-lucide="plus" class="w-4 h-4 text-brand-emerald"></i>
                 <span>添加事项</span>
@@ -2353,9 +2358,9 @@
 
             <div class="space-y-2">
               ${phase.items.map((item, itemIndex) => `
-                <div class="group flex items-center space-x-3 p-3 sm:p-2.5 border transition-all active:bg-white/5 ${
+                <div class="group flex items-center space-x-3 p-3 sm:p-2.5 border transition-all active:bg-black ${
                   item.checked 
-                    ? 'border-white/20 opacity-50 bg-white/5' 
+                    ? 'border-white opacity-50 bg-black' 
                     : 'border-white hover:border-white shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]'
                 }">
                   
@@ -2911,7 +2916,7 @@
           <div onclick="selectNewProjectTemplate('${tpl.id}')" class="p-2.5 rounded-none border cursor-pointer transition select-none flex flex-col justify-between ${
             isSelected 
               ? 'bg-emerald-500/15 border-emerald-500/50 text-white shadow-[0_0_10px_rgba(16,185,129,0.15)]' 
-              : 'bg-brand-bg border-white hover:border-slate-600 text-white'
+              : 'bg-brand-bg border-white hover:border-white text-white'
           }">
             <div class="flex items-center space-x-1.5 mb-1">
               <span class="text-base">${tpl.icon === 'radio' ? '📡' : (tpl.icon === 'video' ? '🎬' : '📋')}</span>
@@ -2950,7 +2955,7 @@
 
       phasesContainer.innerHTML = tpl.phases.map((phase, idx) => `
         <label class="flex items-center space-x-2 text-xs text-white cursor-pointer bg-brand-bg px-2 py-1.5 rounded-none border border-white hover:border-brand-dim transition">
-          <input type="checkbox" value="${idx}" checked class="rounded border-slate-600 bg-black text-brand-emerald focus:ring-brand-emerald w-4 h-4">
+          <input type="checkbox" value="${idx}" checked class="rounded border-white bg-black text-brand-emerald focus:ring-brand-emerald w-4 h-4">
           <span class="truncate">${phase.title}</span>
         </label>
       `).join('');
@@ -3086,7 +3091,7 @@
           tplListEl.innerHTML = '<div class="text-[11px] text-brand-dim py-1">暂无自定义模板，可在上方将当前项目存为模板</div>';
         } else {
           tplListEl.innerHTML = customProjectTemplates.map(t => `
-            <div class="p-2 rounded-none bg-brand-bg border border-white/60 flex items-center justify-between text-xs">
+            <div class="p-2 rounded-none bg-brand-bg border border-white flex items-center justify-between text-xs">
               <div class="flex items-center space-x-2 min-w-0 pr-2">
                 <span>📋</span>
                 <span class="font-semibold text-white truncate">${t.name}</span>
@@ -3116,7 +3121,7 @@
         item.className = `p-3 rounded-none border flex items-center justify-between cursor-pointer transition ${
           isCurrent 
             ? 'bg-emerald-500/10 border-emerald-500/40 text-white' 
-            : 'bg-brand-bg border-white hover:border-slate-600 text-white'
+            : 'bg-brand-bg border-white hover:border-white text-white'
         }`;
 
         item.innerHTML = `
@@ -3176,7 +3181,7 @@
       DEFAULT_PHASES.forEach((phase, idx) => {
         phasesContainer.innerHTML += `
           <label class="flex items-center space-x-2 text-sm text-white cursor-pointer bg-brand-bg px-2 py-1.5 rounded border border-white hover:border-brand-dim transition">
-            <input type="checkbox" value="${idx}" checked class="rounded border-slate-600 bg-black text-brand-emerald focus:ring-brand-emerald focus:ring-offset-brand-bg w-4 h-4">
+            <input type="checkbox" value="${idx}" checked class="rounded border-white bg-black text-brand-emerald focus:ring-brand-emerald focus:ring-offset-brand-bg w-4 h-4">
             <span class="truncate">${phase.title}</span>
           </label>
         `;
