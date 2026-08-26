@@ -26,17 +26,17 @@
         extend: {
           colors: {
             brand: {
-              bg: '#0B0F17',
-              card: '#131926',
-              cardHover: '#1B2335',
-              border: '#232D42',
-              emerald: '#10B981',
-              emeraldGlow: 'rgba(16, 185, 129, 0.25)',
-              amber: '#F59E0B',
-              amberGlow: 'rgba(245, 158, 11, 0.25)',
-              cyan: '#06B6D4',
+              bg: '#000000',          // Pure OLED Black
+              card: '#09090B',        // Zinc-950 (extreme dark gray)
+              cardHover: '#18181B',   // Zinc-900 
+              border: '#27272A',      // Zinc-800
+              emerald: '#FAFAFA',     // Replaced emerald with Cinematic White for primary accents
+              emeraldGlow: 'rgba(250, 250, 250, 0.15)',
+              amber: '#FACC15',       // High-end cinematic gold
+              amberGlow: 'rgba(250, 204, 21, 0.15)',
+              cyan: '#71717A',        // Zinc-500 (muted grey for secondary things instead of cyan)
               red: '#EF4444',
-              dim: '#64748B'
+              dim: '#52525B'          // Zinc-600
             }
           },
           fontFamily: {
@@ -619,59 +619,58 @@
 
 
   <!-- TOP APP HEADER -->
-  <header class="sticky top-0 z-40 bg-brand-bg/95 backdrop-blur-md border-b border-brand-border px-3 py-2.5 sm:px-6 sm:py-3 shadow-lg">
+  <header class="sticky top-0 z-40 bg-brand-bg/80 backdrop-blur-xl border-b border-white/5 px-3 py-2.5 sm:px-6 sm:py-3 shadow-sm">
     <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
       <div class="flex items-center space-x-2 shrink-0">
-        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-brand-emerald shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-brand-emerald shrink-0">
           <i data-lucide="video" class="w-4 h-4"></i>
         </div>
         <div class="min-w-0 hidden sm:block">
           <div class="flex items-center space-x-1.5">
-            <h1 class="text-sm sm:text-lg font-bold tracking-wider text-slate-100 flex items-center gap-1.5 truncate">
+            <h1 class="text-sm sm:text-lg font-bold tracking-tight text-white flex items-center gap-1.5 truncate">
               SHOOT FLOW
             </h1>
           </div>
-          <p class="text-[10px] sm:text-xs text-slate-400 truncate">影视防忘清单 • ADHD友好</p>
+          <p class="text-[10px] sm:text-xs text-brand-dim truncate">影视防忘清单 • ADHD友好</p>
         </div>
       </div>
 
       <!-- Actions -->
       <div class="flex items-center space-x-1.5 shrink-0">
-        <button onclick="openSyncKeyModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 transition active:scale-95" title="设置云端同步密钥">
+        <button onclick="openSyncKeyModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-white/5 text-xs text-slate-300 transition active:scale-95 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]" title="设置云端同步密钥">
           <i data-lucide="key-round" class="w-3.5 h-3.5 text-brand-amber"></i>
-          <span id="sync-key-label" class="max-w-[70px] truncate hidden sm:inline">pengpeng</span>
+          <span id="sync-key-label" class="max-w-[70px] truncate hidden sm:inline font-mono">pengpeng</span>
         </button>
 
-        <button id="btn-projects" onclick="openProjectModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 transition active:scale-95">
-          <i data-lucide="folder-kanban" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <button id="btn-projects" onclick="openProjectModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-white/5 text-xs text-slate-200 transition active:scale-95 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+          <i data-lucide="folder-kanban" class="w-3.5 h-3.5 text-brand-dim"></i>
           <span id="current-project-label" class="max-w-[110px] sm:max-w-[160px] truncate font-medium">当前拍摄</span>
-          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-brand-dim"></i>
         </button>
 
-        
         <!-- Overflow Menu (···) for secondary actions -->
         <div class="relative" id="overflow-menu-wrapper">
-          <button onclick="document.getElementById('overflow-dropdown').classList.toggle('hidden')" class="p-2 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-slate-400 hover:text-slate-200 transition active:scale-95" title="更多选项">
+          <button onclick="document.getElementById('overflow-dropdown').classList.toggle('hidden')" class="p-2 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-white/5 text-brand-dim hover:text-white transition active:scale-95 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]" title="更多选项">
             <i data-lucide="ellipsis" class="w-3.5 h-3.5"></i>
           </button>
-          <div id="overflow-dropdown" class="hidden absolute right-0 top-full mt-1.5 w-44 bg-brand-card border border-brand-border rounded-xl shadow-2xl shadow-black/40 overflow-hidden z-50 animate-in fade-in slide-in-from-top-1">
-            <button id="btn-toggle-theme" onclick="toggleTheme(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-200 hover:bg-brand-cardHover flex items-center space-x-2.5 transition">
+          <div id="overflow-dropdown" class="hidden absolute right-0 top-full mt-1.5 w-44 bg-brand-card border border-white/10 rounded-xl shadow-2xl shadow-black overflow-hidden z-50 animate-in fade-in slide-in-from-top-1">
+            <button id="btn-toggle-theme" onclick="toggleTheme(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-300 hover:bg-white/5 hover:text-white flex items-center space-x-2.5 transition">
               <span id="theme-icon">☀️</span>
               <span>切换日照 / 暗夜</span>
             </button>
-            <button id="btn-toggle-minimal" onclick="toggleMinimalMode(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-200 hover:bg-brand-cardHover flex items-center space-x-2.5 transition border-t border-brand-border/50">
+            <button id="btn-toggle-minimal" onclick="toggleMinimalMode(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-300 hover:bg-white/5 hover:text-white flex items-center space-x-2.5 transition border-t border-white/5">
               <span class="text-brand-amber">⚡</span>
               <span id="minimal-mode-text">极简 / 详细模式</span>
             </button>
-            <button onclick="handleManualLock(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-400 hover:bg-brand-cardHover hover:text-red-400 flex items-center space-x-2.5 transition border-t border-brand-border/50">
+            <button onclick="handleManualLock(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-brand-dim hover:bg-white/5 hover:text-brand-red flex items-center space-x-2.5 transition border-t border-white/5">
               <span>🔒</span>
               <span>锁定页面</span>
             </button>
           </div>
         </div>
 
-        <button onclick="openNewProjectModal()" class="p-1.5 rounded-lg bg-brand-emerald hover:bg-emerald-400 text-black font-semibold text-xs transition flex items-center space-x-1 sm:px-2.5 active:scale-95">
-          <i data-lucide="plus" class="w-4 h-4"></i>
+        <button onclick="openNewProjectModal()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition flex items-center space-x-1 active:scale-95 shadow-lg shadow-white/10">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">新拍摄</span>
         </button>
       </div>
@@ -679,20 +678,20 @@
 
     <!-- OVERALL PROGRESS BAR -->
     <div class="max-w-4xl mx-auto mt-3">
-      <div class="flex justify-between items-center text-xs mb-1.5">
+      <div class="flex justify-between items-center text-[10px] sm:text-xs mb-1.5">
         <div class="flex items-center space-x-2">
           <span class="font-mono text-brand-emerald font-bold" id="progress-percent">0%</span>
-          <span class="text-slate-400">全流程总进度</span>
+          <span class="text-brand-dim">全流程总进度</span>
         </div>
-        <div class="flex items-center space-x-3 text-xs font-mono">
-          <span id="stats-checked" class="text-slate-300">0 / 0 已核对</span>
-          <span id="sync-status" class="flex items-center gap-1 text-slate-400">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 本地就绪
+        <div class="flex items-center space-x-3 font-mono">
+          <span id="stats-checked" class="text-slate-400">0 / 0 已核对</span>
+          <span id="sync-status" class="flex items-center gap-1 text-brand-dim">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40 shadow-[0_0_8px_rgba(255,255,255,0.4)]"></span> 本地就绪
           </span>
         </div>
       </div>
-      <div class="w-full h-2 rounded-full bg-brand-card border border-brand-border overflow-hidden p-0.5">
-        <div id="progress-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 transition-all duration-500 ease-out" style="width: 0%;"></div>
+      <div class="w-full h-[3px] rounded-full bg-white/5 overflow-hidden">
+        <div id="progress-bar" class="h-full rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all duration-500 ease-out" style="width: 0%;"></div>
       </div>
     </div>
   </header>
@@ -701,16 +700,16 @@
   <main class="max-w-4xl mx-auto px-4 sm:px-6 pt-5 space-y-4">
 
     <!-- TOP VIEW NAVIGATION TABS -->
-    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-brand-border pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3">
       <div class="flex items-center space-x-2">
-        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition active:scale-95 bg-emerald-500/20 text-brand-emerald border border-emerald-500/30">
+        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition active:scale-95 bg-white/10 text-white border border-white/10 shadow-[0_2px_10px_rgba(255,255,255,0.05)]">
           <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
           <span>🎬 拍摄防忘清单</span>
         </button>
-        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition active:scale-95 bg-brand-card hover:bg-brand-cardHover text-slate-300 border border-brand-border">
+        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition active:scale-95 bg-transparent hover:bg-white/5 text-brand-dim border border-transparent">
           <i data-lucide="calculator" class="w-3.5 h-3.5 text-brand-amber"></i>
           <span>📦 设备与公账台账</span>
-          <span id="ledger-nav-badge" class="px-1.5 py-0.5 rounded text-[10px] bg-brand-amber/20 text-brand-amber border border-brand-amber/30 font-mono">￥49.7k · 20场</span>
+          <span id="ledger-nav-badge" class="px-1.5 py-0.5 rounded text-[10px] bg-brand-amber/10 text-brand-amber font-mono">￥49.7k · 20场</span>
         </button>
       </div>
       
@@ -735,26 +734,26 @@
     <div id="view-checklist" class="space-y-4">
 
     <!-- PROJECT INFO & QUICK STATS BANNER -->
-    <div id="project-banner" class="bg-brand-card border border-brand-border rounded-xl p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+    <div id="project-banner" class="bg-brand-card rounded-xl p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_20px_rgba(0,0,0,0.5)]">
       <div class="space-y-1 min-w-0">
         <div class="flex items-center space-x-2">
-          <span class="px-2 py-0.5 text-[10px] sm:text-xs rounded bg-brand-border text-slate-300 font-mono shrink-0" id="project-date">2026.08.23</span>
-          <h2 class="text-base sm:text-lg font-bold text-slate-100 truncate" id="project-title-display">默认拍摄项目</h2>
+          <span class="px-2 py-0.5 text-[10px] sm:text-xs rounded bg-white/5 border border-white/5 text-slate-300 font-mono shrink-0" id="project-date">2026.08.23</span>
+          <h2 class="text-base sm:text-lg font-bold tracking-tight text-white truncate" id="project-title-display">默认拍摄项目</h2>
         </div>
-        <p class="text-xs text-slate-400 line-clamp-2 sm:line-clamp-none" id="project-desc-display">飞行员式逐项检查，杜绝忘带设备、漏报销、接口不匹配等惨痛教训。</p>
+        <p class="text-xs text-brand-dim line-clamp-2 sm:line-clamp-none" id="project-desc-display">飞行员式逐项检查，杜绝忘带设备、漏报销、接口不匹配等惨痛教训。</p>
       </div>
 
       <!-- Quick Action Buttons -->
       <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0 pt-1 sm:pt-0">
-        <button onclick="copySummaryToClipboard()" class="justify-center px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-200 flex items-center space-x-1.5 transition active:scale-95" title="复制文本摘要">
-          <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
+        <button onclick="copySummaryToClipboard()" class="justify-center px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 flex items-center space-x-1.5 transition active:scale-95 border border-white/5" title="复制文本摘要">
+          <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-dim"></i>
           <span class="hidden sm:inline">复制文本</span>
         </button>
-        <button onclick="openPosterModal()" class="justify-center px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs text-brand-emerald border border-emerald-500/30 font-semibold flex items-center space-x-1.5 transition active:scale-95" title="导出海报">
-          <i data-lucide="share-2" class="w-3.5 h-3.5 text-brand-emerald"></i>
+        <button onclick="openPosterModal()" class="justify-center px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 text-xs font-bold flex items-center space-x-1.5 transition active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.15)]" title="导出海报">
+          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">导出</span>
         </button>
-        <button onclick="resetCurrentProject()" class="justify-center px-2 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs text-slate-500 hover:text-red-400 hover:bg-red-500/10 flex items-center space-x-1.5 transition active:scale-95" title="重置清单">
+        <button onclick="resetCurrentProject()" class="justify-center px-2 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs text-brand-dim hover:text-brand-red hover:bg-red-500/10 flex items-center space-x-1.5 transition active:scale-95" title="重置清单">
           <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">重置</span>
         </button>
@@ -2548,10 +2547,10 @@
               return `
                 <button onclick="setMinimalActivePhase(${idx})" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center space-x-1.5 active:scale-95 ${
                   isActive 
-                    ? 'bg-brand-emerald text-black font-bold shadow-lg shadow-emerald-500/20 scale-[1.02]' 
+                    ? 'bg-white text-black font-bold shadow-[0_0_15px_rgba(255,255,255,0.2)] scale-[1.02]' 
                     : pDone
-                      ? 'bg-emerald-950/40 text-brand-emerald border border-emerald-500/30'
-                      : 'bg-brand-card text-slate-300 border border-brand-border hover:border-slate-600'
+                      ? 'bg-white/10 text-slate-300 border border-white/5'
+                      : 'bg-transparent text-brand-dim border border-white/5 hover:border-white/20'
                 }">
                   <span>${pDone ? '✓' : (idx + 1)}</span>
                   <span>${p.title}</span>
@@ -2562,40 +2561,40 @@
           </div>
 
           <!-- Active Phase Card (Ultra-Clean Things 3 style) -->
-          <div class="bg-brand-card/90 border border-brand-border rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between pb-3 border-b border-brand-border/60">
+          <div class="bg-brand-card border border-white/5 rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-white/5">
               <div class="min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
-                  <span class="text-xs font-bold font-mono text-cyan-400 tracking-wider">${currentPhase.code}</span>
+                  <span class="text-xs font-bold font-mono text-white tracking-wider">${currentPhase.code}</span>
                   <span class="text-xs px-2.5 py-0.5 rounded-md font-semibold tracking-wide border ${
                     isComplete 
-                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]' 
-                      : 'bg-cyan-950/60 text-cyan-300 border-cyan-500/40 shadow-[0_0_6px_rgba(6,182,212,0.15)]'
+                      ? 'bg-white/10 text-white border-white/20' 
+                      : 'bg-white/5 text-slate-300 border-white/5'
                   }">${currentPhase.badge}</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2">
+                <h3 class="text-base sm:text-lg font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2 tracking-tight">
                   ${currentPhase.title}
-                  <span class="text-xs font-normal text-slate-400 hidden sm:inline">— ${currentPhase.subtitle}</span>
+                  <span class="text-xs font-normal text-brand-dim hidden sm:inline">— ${currentPhase.subtitle}</span>
                 </h3>
               </div>
               <div class="text-right shrink-0 font-mono">
-                <span class="text-sm sm:text-base font-bold ${isComplete ? 'text-brand-emerald' : 'text-slate-200'}">${phaseChecked} / ${phaseTotal}</span>
-                <div class="text-[10px] text-slate-400">${percent}%</div>
+                <span class="text-sm sm:text-base font-bold ${isComplete ? 'text-white' : 'text-slate-300'}">${phaseChecked} / ${phaseTotal}</span>
+                <div class="text-[10px] text-brand-dim">${percent}%</div>
               </div>
             </div>
 
             ${isCameraOnsetPhase(currentPhase) ? renderCameraReminderBanner() : ''}
             <!-- Items List -->
-            <div class="divide-y divide-brand-border/40">
+            <div class="divide-y divide-white/5">
               ${currentPhase.items.map((item, itemIndex) => `
-                <div class="py-3 sm:py-3.5 flex items-center justify-between group select-none active:bg-brand-cardHover/50 transition px-1 rounded-xl cursor-pointer" onclick="toggleItem(${minimalActivePhase}, ${itemIndex})">
+                <div class="py-3 sm:py-3.5 flex items-center justify-between group select-none hover:bg-white/5 active:bg-white/10 transition px-2 -mx-2 rounded-xl cursor-pointer" onclick="toggleItem(${minimalActivePhase}, ${itemIndex})">
                   <div class="flex items-center space-x-3.5 flex-1 min-w-0 pr-2">
-                    <button onclick="event.stopPropagation(); toggleItem(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all shrink-0 active:scale-90 ${
+                    <button onclick="event.stopPropagation(); toggleItem(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-full flex items-center justify-center border transition-all shrink-0 active:scale-90 ${
                       item.checked 
-                        ? 'bg-brand-emerald text-black border-brand-emerald shadow-[0_0_10px_rgba(16,185,129,0.3)]' 
+                        ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]' 
                         : (item.isCritical && !item.checked)
-                          ? 'border-red-500 bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
-                          : 'border-slate-500 bg-transparent hover:border-brand-emerald'
+                          ? 'border-brand-red bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
+                          : 'border-white/20 bg-transparent hover:border-white'
                     }">
                       ${item.checked ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-xs">⚠️</span>' : '')}
                     </button>
@@ -2712,36 +2711,36 @@
 
               <div class="flex-1 min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
-                  <span class="font-mono text-xs font-bold text-cyan-400 tracking-wider">${phase.code}</span>
+                  <span class="font-mono text-xs font-bold text-white tracking-wider">${phase.code}</span>
                   <span class="text-xs px-2.5 py-0.5 rounded-md font-semibold tracking-wide border transition-all ${
                     isComplete 
-                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]' 
-                      : 'bg-cyan-950/60 text-cyan-300 border-cyan-500/40 shadow-[0_0_6px_rgba(6,182,212,0.15)]'
+                      ? 'bg-white/10 text-white border-white/20' 
+                      : 'bg-white/5 text-slate-300 border-white/5'
                   }">${phase.badge}</span>
                 </div>
-                <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2">
+                <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2 tracking-tight">
                   ${phase.title}
-                  <span class="text-xs font-normal text-slate-400 hidden sm:inline">— ${phase.subtitle}</span>
+                  <span class="text-xs font-normal text-brand-dim hidden sm:inline">— ${phase.subtitle}</span>
                 </h3>
               </div>
             </div>
 
             <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
               <div class="text-right">
-                <div class="text-xs font-mono font-semibold ${isComplete ? 'text-brand-emerald' : 'text-slate-300'}">
+                <div class="text-xs font-mono font-semibold ${isComplete ? 'text-white' : 'text-slate-400'}">
                   ${phaseChecked} / ${phaseTotal}
                 </div>
-                <div class="text-[10px] text-slate-500 font-mono">${percent}%</div>
+                <div class="text-[10px] text-brand-dim font-mono">${percent}%</div>
               </div>
-              ${zenModePhase === null ? `<button onclick="event.stopPropagation(); toggleZenMode(${phaseIndex})" class="px-2.5 py-1 text-[10px] rounded bg-brand-bg border border-brand-border hover:border-brand-cyan text-brand-cyan font-bold transition mr-1 sm:mr-3 shadow-lg flex items-center gap-1 active:scale-95">🎯 专注</button>` : ''}
-              <div class="w-6 h-6 rounded-lg bg-brand-bg flex items-center justify-center text-slate-400 border border-brand-border transition-transform ${isExpanded ? 'rotate-180' : ''}">
+              ${zenModePhase === null ? `<button onclick="event.stopPropagation(); toggleZenMode(${phaseIndex})" class="px-2.5 py-1 text-[10px] rounded bg-white/5 border border-white/10 hover:border-white/30 text-white font-bold transition mr-1 sm:mr-3 shadow-sm flex items-center gap-1 active:scale-95">🎯 专注</button>` : ''}
+              <div class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 border border-white/10 transition-transform ${isExpanded ? 'rotate-180' : ''}">
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
               </div>
             </div>
           </div>
 
-          <div class="${isExpanded ? 'block' : 'hidden'} border-t border-brand-border/60 bg-brand-bg/40 p-4 sm:p-5 space-y-3">
-            <p class="text-xs text-slate-400 italic mb-2">${phase.description}</p>
+          <div class="${isExpanded ? 'block' : 'hidden'} border-t border-white/5 bg-transparent p-4 sm:p-5 space-y-3">
+            <p class="text-xs text-brand-dim italic mb-2">${phase.description}</p>
             
             ${isCameraOnsetPhase(phase) ? renderCameraReminderBanner() : ''}
 
@@ -2749,16 +2748,17 @@
               ${phase.items.map((item, itemIndex) => `
                 <div class="group flex items-center space-x-3 p-3 sm:p-2.5 rounded-xl transition-all border active:bg-brand-cardHover ${
                   item.checked 
-                    ? 'bg-brand-card/40 border-transparent hover:border-brand-border' 
-                    : 'bg-brand-card border-brand-border hover:border-slate-600'
+                    ? 'bg-brand-card border-transparent hover:border-white/5 opacity-80' 
+                    : 'bg-brand-card border-white/5 hover:border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]'
                 }">
                   
                   <button onclick="toggleItem(${phaseIndex}, ${itemIndex})" class="w-6 h-6 sm:w-5 sm:h-5 rounded-lg flex items-center justify-center border transition-all shrink-0 active:scale-90 ${
                     item.checked 
-                      ? 'bg-brand-emerald text-black border-brand-emerald glow-emerald' 
+                      ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]' 
                       : (item.isCritical && !item.checked)
-                        ? 'border-red-500 bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
-                        : 'border-slate-500 bg-brand-bg hover:border-brand-emerald'
+                        ? 'border-brand-red bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
+                        : 'border-white/20 bg-brand-bg hover:border-white'
+
                   }">
                     ${item.checked ? '<i data-lucide="check" class="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-[11px] sm:text-[10px]">⚠️</span>' : '')}
                   </button>
