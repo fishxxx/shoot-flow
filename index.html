@@ -56,9 +56,7 @@
 
   <!-- Vendor Plugins: Local First with Fallbacks -->
   <style>
-    :root {
-      color-scheme: dark;
-    }
+    
   </style>
   <script src="lib_lucide.js"></script>
   <script>
@@ -236,15 +234,57 @@
 
     /* High-Contrast Light Mode Overrides for Ledger */
     /* Brutalist Invert Light Mode */
+    
+
+      /* True Brutalist Light Mode (No Invert Hack) */
     html.theme-light {
-      filter: invert(1) hue-rotate(180deg);
+      color-scheme: light;
       background-color: #ffffff;
     }
-    html.theme-light img, html.theme-light video, html.theme-light iframe, html.theme-light .no-invert {
-      filter: invert(1) hue-rotate(180deg);
+    html.theme-light body,
+    html.theme-light .bg-black {
+      background-color: #ffffff !important;
+    }
+    html.theme-light .text-white {
+      color: #000000 !important;
+    }
+    html.theme-light .border-white {
+      border-color: #000000 !important;
+    }
+    html.theme-light .text-brand-dim {
+      color: #777777 !important;
+    }
+    html.theme-light .border-brand-dim {
+      border-color: #777777 !important;
+    }
+    html.theme-light .hover\:bg-white:hover {
+      background-color: #000000 !important;
+    }
+    html.theme-light .hover\:text-black:hover {
+      color: #ffffff !important;
+    }
+    html.theme-light .shadow-\[8px_8px_0_0_rgba\(255\,255\,255\,1\)\] {
+      box-shadow: 8px 8px 0 0 rgba(0,0,0,1) !important;
+    }
+    html.theme-light .shadow-\[0_0_15px_rgba\(255\,255\,255\,0\.2\)\] {
+      box-shadow: 0 0 15px rgba(0,0,0,0.2) !important;
+    }
+    html.theme-light .shadow-\[0_-4px_20px_rgba\(0\,0\,0\,0\.5\)\] {
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.1) !important;
+    }
+    /* Modals backdrop */
+    html.theme-light .bg-black\/75 {
+      background-color: rgba(255, 255, 255, 0.85) !important;
     }
 
-  </style>
+
+    /* Fix for native date input text color in light mode */
+    html.theme-light input[type="date"] {
+      color: #000000 !important;
+      -webkit-text-fill-color: #000000 !important;
+    }
+
+</style>
 </head>
 <body class="bg-brand-bg text-white min-h-screen font-mono antialiased selection:bg-brand-emerald selection:text-white pb-24">
 
