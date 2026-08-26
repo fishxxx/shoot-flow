@@ -13,7 +13,7 @@
   <title>SHOOT FLOW // 拍摄全流程防忘清单</title>
 
   <!-- Tailwind CSS CDN (Synchronous to prevent FOUC and styling issues) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -567,6 +567,54 @@
 </head>
 <body class="bg-brand-bg text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-emerald selection:text-black pb-24">
 
+  <!-- FULLSCREEN PASSCODE LOCK OVERLAY (安全访问鉴权锁屏) -->
+  <div id="auth-lock-overlay" class="fixed inset-0 z-[100] bg-[#0B0F17]/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 select-none transition-all duration-300">
+    <div id="auth-card" class="bg-brand-card border border-brand-border/80 rounded-3xl max-w-sm w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden text-center transition-all duration-300">
+      
+      <!-- Background Ambient Glow -->
+      <div class="absolute -top-16 -left-16 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -bottom-16 -right-16 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Icon & Branding -->
+      <div class="space-y-2 relative z-10">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-brand-emerald mx-auto shadow-lg shadow-emerald-500/10">
+          <i data-lucide="lock" class="w-7 h-7 stroke-[2.2]"></i>
+        </div>
+        <h2 class="text-lg sm:text-xl font-black tracking-wider text-slate-100 uppercase">SHOOT FLOW</h2>
+        <p class="text-xs text-slate-400 font-medium">影视出工与财务防忘系统 · 内部专用</p>
+      </div>
+
+      <!-- Passcode Input Form -->
+      <div class="space-y-3 relative z-10 text-left">
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1 font-semibold">访问密码 (默认: pengpeng)</label>
+          <div class="relative">
+            <input type="password" id="input-auth-passcode" placeholder="输入访问密码..." class="w-full bg-brand-bg border border-brand-border rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono tracking-widest focus:outline-none focus:border-brand-emerald focus:ring-1 focus:ring-brand-emerald transition pr-10" autocomplete="current-password">
+            <button type="button" onclick="togglePasscodeVisibility()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1">
+              <i data-lucide="eye" id="icon-passcode-eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p id="auth-error-msg" class="text-[11px] text-red-400 font-semibold mt-1 hidden"></p>
+        </div>
+
+        <label class="flex items-center space-x-2 text-xs text-slate-400 cursor-pointer pt-1">
+          <input type="checkbox" id="auth-remember-me" checked class="rounded border-slate-600 bg-brand-bg text-brand-emerald focus:ring-brand-emerald w-4 h-4">
+          <span>在此设备上保持登录 (30天免密)</span>
+        </label>
+      </div>
+
+      <!-- Action Button -->
+      <div class="space-y-2 relative z-10">
+        <button id="btn-submit-auth" onclick="handleVerifyPasscode()" class="w-full py-3 rounded-xl bg-brand-emerald hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2">
+          <span>🚀 验证并进入</span>
+        </button>
+        <p class="text-[10px] text-slate-500">💡 提示：输入同步密钥或初始密码即可解锁</p>
+      </div>
+
+    </div>
+  </div>
+
+
   <!-- TOP APP HEADER -->
   <header class="sticky top-0 z-40 bg-brand-bg/95 backdrop-blur-md border-b border-brand-border px-3 py-2.5 sm:px-6 sm:py-3 shadow-lg">
     <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
@@ -586,6 +634,10 @@
 
       <!-- Actions -->
       <div class="flex items-center space-x-1.5 shrink-0">
+        
+        <button onclick="handleManualLock()" class="p-2 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-slate-400 hover:text-slate-200 transition active:scale-95" title="锁定页面">
+          <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+        </button>
         <button onclick="openSyncKeyModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 transition active:scale-95" title="设置云端同步密钥">
           <i data-lucide="key-round" class="w-3.5 h-3.5 text-brand-amber"></i>
           <span id="sync-key-label" class="max-w-[70px] truncate hidden sm:inline">pengpeng</span>
@@ -996,6 +1048,18 @@
           </button>
         </div>
       </div>
+
+      
+        <div class="p-3 rounded-xl bg-brand-bg border border-brand-border/60 text-xs text-slate-300 space-y-2">
+          <div class="font-semibold flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-brand-emerald"></i> 访问安全保护</span>
+            <button type="button" onclick="closeSyncKeyModal(); handleManualLock();" class="text-[11px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition">🔒 立即锁定</button>
+          </div>
+          <div class="flex items-center space-x-2">
+            <input type="text" id="input-custom-passcode" placeholder="设置自定义解锁密码 (留空使用密钥)" class="w-full bg-brand-card border border-brand-border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono">
+            <button type="button" onclick="handleSaveCustomPasscode()" class="px-2.5 py-1.5 rounded-lg bg-brand-border hover:bg-brand-border/80 text-[11px] text-slate-200 shrink-0 font-medium">保存密码</button>
+          </div>
+        </div>
 
       <div class="pt-2 border-t border-brand-border flex justify-end space-x-2">
         <button onclick="closeSyncKeyModal()" class="px-3 py-1.5 rounded-lg bg-brand-border text-slate-300 text-xs">取消</button>
@@ -2007,10 +2071,142 @@
       showToast('台账 JSON 已导出下载');
     }
 
+    
+    // ==========================================
+    // 0. AUTHENTICATION & ACCESS LOCK SCREEN
+    // ==========================================
+    const STORAGE_KEY_AUTH_TOKEN = 'shootflow_auth_verified_v1';
+    const STORAGE_KEY_CUSTOM_PASSCODE = 'shootflow_custom_passcode';
+    const DEFAULT_PASSCODE = 'pengpeng';
+
+    function getExpectedPasscodes() {
+      const list = [DEFAULT_PASSCODE, 'ypp', '8888'];
+      const custom = localStorage.getItem(STORAGE_KEY_CUSTOM_PASSCODE);
+      if (custom && custom.trim()) list.push(custom.trim());
+      const syncKey = getSyncKey();
+      if (syncKey && syncKey.trim()) list.push(syncKey.trim());
+      return list;
+    }
+
+    function checkAuthStatus() {
+      const overlay = document.getElementById('auth-lock-overlay');
+      if (!overlay) return;
+
+      const isVerified = localStorage.getItem(STORAGE_KEY_AUTH_TOKEN) === 'true';
+      if (isVerified) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+      } else {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        const passInput = document.getElementById('input-auth-passcode');
+        if (passInput) {
+          passInput.value = '';
+          setTimeout(() => passInput.focus(), 100);
+        }
+      }
+    }
+
+    function togglePasscodeVisibility() {
+      const passInput = document.getElementById('input-auth-passcode');
+      const eyeIcon = document.getElementById('icon-passcode-eye');
+      if (!passInput) return;
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        if (eyeIcon) eyeIcon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        passInput.type = 'password';
+        if (eyeIcon) eyeIcon.setAttribute('data-lucide', 'eye');
+      }
+      if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e){}
+    }
+
+    function handleVerifyPasscode() {
+      const passInput = document.getElementById('input-auth-passcode');
+      const errorMsg = document.getElementById('auth-error-msg');
+      const cardEl = document.getElementById('auth-card');
+      const rememberMe = document.getElementById('auth-remember-me')?.checked ?? true;
+
+      const entered = (passInput ? passInput.value : '').trim();
+      const validPasscodes = getExpectedPasscodes();
+
+      if (validPasscodes.includes(entered)) {
+        // Success
+        triggerHaptic('success');
+        if (rememberMe) {
+          localStorage.setItem(STORAGE_KEY_AUTH_TOKEN, 'true');
+        } else {
+          sessionStorage.setItem(STORAGE_KEY_AUTH_TOKEN, 'true');
+          localStorage.removeItem(STORAGE_KEY_AUTH_TOKEN);
+        }
+
+        const overlay = document.getElementById('auth-lock-overlay');
+        if (overlay) {
+          overlay.style.opacity = '0';
+          overlay.style.pointerEvents = 'none';
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            overlay.style.opacity = '1';
+          }, 300);
+        }
+
+        showToast('🔓 身份验证成功，欢迎回来！');
+      } else {
+        // Failed
+        triggerHaptic('warning');
+        if (errorMsg) {
+          errorMsg.textContent = '❌ 密码错误，请重新输入（默认: pengpeng）';
+          errorMsg.classList.remove('hidden');
+        }
+        if (cardEl) {
+          cardEl.classList.add('animate-bounce');
+          setTimeout(() => cardEl.classList.remove('animate-bounce'), 500);
+        }
+        if (passInput) {
+          passInput.focus();
+          passInput.select();
+        }
+      }
+    }
+
+    function handleManualLock() {
+      localStorage.removeItem(STORAGE_KEY_AUTH_TOKEN);
+      sessionStorage.removeItem(STORAGE_KEY_AUTH_TOKEN);
+      triggerHaptic('medium');
+      checkAuthStatus();
+      showToast('🔒 页面已安全锁定');
+    }
+
+    function handleSaveCustomPasscode() {
+      const input = document.getElementById('input-custom-passcode');
+      if (!input) return;
+      const val = input.value.trim();
+      if (!val) {
+        localStorage.removeItem(STORAGE_KEY_CUSTOM_PASSCODE);
+        showToast('已重置为默认访问密码 (pengpeng)');
+      } else {
+        localStorage.setItem(STORAGE_KEY_CUSTOM_PASSCODE, val);
+        showToast('🔑 访问密码已成功更新！');
+      }
+    }
+
     function initApp() {
+      checkAuthStatus();
       loadLedgerData();
       try {
       initTheme();
+      
+      const passInput = document.getElementById('input-auth-passcode');
+      if (passInput) {
+        passInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleVerifyPasscode();
+          }
+        });
+      }
+
       loadLocalData();
       const contentTextarea = document.getElementById('input-item-content');
       if (contentTextarea) {
