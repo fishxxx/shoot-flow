@@ -401,8 +401,8 @@
           <span>复制文本</span>
         </button>
         <button onclick="openPosterModal()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs text-brand-emerald border border-emerald-500/30 font-semibold flex items-center space-x-1.5 transition active:scale-95">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-emerald"></i>
-          <span>瑞士风海报</span>
+          <i data-lucide="share-2" class="w-3.5 h-3.5 text-brand-emerald"></i>
+          <span>导出</span>
         </button>
         <button onclick="resetCurrentProject()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-300 hover:text-red-400 flex items-center space-x-1.5 transition active:scale-95">
           <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
@@ -593,7 +593,7 @@
       <div class="flex items-center justify-between border-b border-brand-border pb-3">
         <h3 class="font-bold text-slate-100 flex items-center gap-2 text-sm sm:text-base">
           <i data-lucide="award" class="w-4 h-4 text-brand-emerald"></i>
-          <span>瑞士国际主义风格 • 拍摄复盘与报销凭单</span>
+          <span>拍摄复盘与报销核对凭单导出</span>
         </h3>
         <button onclick="closePosterModal()" class="text-slate-400 hover:text-slate-200">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -1153,14 +1153,18 @@
           </div>
 
           <!-- Bottom Floating Quick Tool Bar (Mobile friendly) -->
-          <div class="flex items-center justify-between pt-2">
-            <button onclick="copySummaryToClipboard()" class="px-3 py-1.5 rounded-lg bg-brand-card border border-brand-border text-xs text-slate-300 flex items-center space-x-1 transition active:scale-95">
-              <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
-              <span>复制复盘</span>
+          <div class="flex items-center space-x-2 pt-2">
+            <button onclick="openPosterModal()" class="flex-1 px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-xs text-brand-emerald border border-emerald-500/30 font-semibold flex items-center justify-center space-x-1.5 transition active:scale-95">
+              <i data-lucide="share-2" class="w-3.5 h-3.5 text-brand-emerald"></i>
+              <span>导出</span>
             </button>
-            <button onclick="resetCurrentProject()" class="px-3 py-1.5 rounded-lg bg-brand-card border border-brand-border text-xs text-slate-400 hover:text-red-400 flex items-center space-x-1 transition active:scale-95">
+            <button onclick="copySummaryToClipboard()" class="flex-1 px-3 py-2 rounded-xl bg-brand-card border border-brand-border text-xs text-slate-300 flex items-center justify-center space-x-1 transition active:scale-95">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
+              <span>复制文本</span>
+            </button>
+            <button onclick="resetCurrentProject()" class="px-3 py-2 rounded-xl bg-brand-card border border-brand-border text-xs text-slate-400 hover:text-red-400 flex items-center justify-center space-x-1 transition active:scale-95">
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-              <span>重置勾选</span>
+              <span>重置</span>
             </button>
           </div>
         `;
