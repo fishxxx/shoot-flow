@@ -1,0 +1,18 @@
+{
+  "name": "SHOOT FLOW 拍摄防忘清单",
+  "short_name": "SHOOT FLOW",
+  "description": "影视拍摄全流程防忘对照清单 • ADHD 友好",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B0F17",
+  "theme_color": "#0B0F17",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

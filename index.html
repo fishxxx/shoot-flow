@@ -2,7 +2,14 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SHOOT FLOW">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
   <title>SHOOT FLOW // 拍摄全流程防忘清单</title>
 
   <!-- Tailwind CSS CDN (Synchronous to prevent FOUC and styling issues) -->
@@ -51,6 +58,7 @@
       try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
     });
     loadScript("https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js");
+    loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js");
     loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2", () => {
       try { pullFromCloud(); } catch(e){}
     });
@@ -115,6 +123,71 @@
         font-size: 16px !important; /* Prevents auto-zoom on iOS */
       }
     }
+  
+    /* High-Contrast Outdoor Sunlight Mode (☀️ 烈日强光模式) */
+    html.theme-light {
+      color-scheme: light;
+    }
+    html.theme-light body {
+      background-color: #F1F5F9 !important;
+      color: #0F172A !important;
+    }
+    html.theme-light header {
+      background-color: rgba(241, 245, 249, 0.95) !important;
+      border-color: #CBD5E1 !important;
+    }
+    html.theme-light .bg-brand-bg {
+      background-color: #FFFFFF !important;
+    }
+    html.theme-light .bg-brand-card {
+      background-color: #FFFFFF !important;
+      border-color: #CBD5E1 !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    html.theme-light .bg-brand-card\/90 {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+    }
+    html.theme-light .bg-brand-card\/40 {
+      background-color: rgba(241, 245, 249, 0.6) !important;
+    }
+    html.theme-light .text-slate-100 {
+      color: #0F172A !important;
+    }
+    html.theme-light .text-slate-200 {
+      color: #1E293B !important;
+    }
+    html.theme-light .text-slate-300 {
+      color: #334155 !important;
+    }
+    html.theme-light .text-slate-400 {
+      color: #475569 !important;
+    }
+    html.theme-light .text-slate-500 {
+      color: #64748B !important;
+    }
+    html.theme-light .border-brand-border {
+      border-color: #CBD5E1 !important;
+    }
+    html.theme-light .border-brand-border\/60 {
+      border-color: #E2E8F0 !important;
+    }
+    html.theme-light .border-brand-border\/40 {
+      border-color: #E2E8F0 !important;
+    }
+    html.theme-light .checked-text {
+      color: #94A3B8 !important;
+    }
+    html.theme-light #progress-bar {
+      background: linear-gradient(to right, #059669, #0D9488, #0891B2) !important;
+    }
+    html.theme-light .bg-slate-900\/60 {
+      background-color: #E2E8F0 !important;
+      border-color: #CBD5E1 !important;
+    }
+    html.theme-light .bg-emerald-950\/20, html.theme-light .bg-emerald-950\/40 {
+      background-color: #DCFCE7 !important;
+    }
+
   </style>
 </head>
 <body class="bg-brand-bg text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-emerald selection:text-black pb-24">
@@ -149,6 +222,10 @@
           <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
         </button>
 
+        
+        <button id="btn-toggle-theme" onclick="toggleTheme()" class="px-2 py-1.5 rounded-lg border text-xs font-semibold flex items-center space-x-1 transition active:scale-95 bg-brand-card hover:bg-brand-cardHover border-brand-border text-slate-200" title="切换烈日强光/暗夜模式">
+          <span id="theme-icon">☀️</span>
+        </button>
         <button id="btn-toggle-minimal" onclick="toggleMinimalMode()" class="px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center space-x-1 transition active:scale-95 bg-brand-card hover:bg-brand-cardHover border-brand-border text-slate-200" title="切换极简/详细视图">
           <span class="text-brand-amber">⚡</span>
           <span id="minimal-mode-text" class="hidden xs:inline">极简</span>
@@ -198,7 +275,11 @@
       <div class="flex items-center space-x-2 shrink-0 pt-1 sm:pt-0">
         <button onclick="copySummaryToClipboard()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-200 flex items-center space-x-1.5 transition active:scale-95">
           <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
-          <span>复制复盘</span>
+          <span>复制文本</span>
+        </button>
+        <button onclick="openPosterModal()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs text-brand-emerald border border-emerald-500/30 font-semibold flex items-center space-x-1.5 transition active:scale-95">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-emerald"></i>
+          <span>瑞士风海报</span>
         </button>
         <button onclick="resetCurrentProject()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-300 hover:text-red-400 flex items-center space-x-1.5 transition active:scale-95">
           <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
@@ -382,6 +463,92 @@
     </div>
   </div>
 
+  
+  <!-- MODAL: SWISS STYLE EXPORT POSTER (报销与复盘海报) -->
+  <div id="poster-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-xl w-full p-4 sm:p-6 space-y-4 shadow-2xl my-auto">
+      <div class="flex items-center justify-between border-b border-brand-border pb-3">
+        <h3 class="font-bold text-slate-100 flex items-center gap-2 text-sm sm:text-base">
+          <i data-lucide="award" class="w-4 h-4 text-brand-emerald"></i>
+          <span>瑞士国际主义风格 • 拍摄复盘与报销凭单</span>
+        </h3>
+        <button onclick="closePosterModal()" class="text-slate-400 hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- THE CAPTURABLE SWISS POSTER CONTAINER -->
+      <div class="overflow-x-auto p-1 max-h-[65vh] overflow-y-auto rounded-xl bg-black/40 border border-brand-border/40">
+        <div id="swiss-poster-card" class="bg-[#0B0F17] text-slate-100 p-6 sm:p-8 rounded-xl border border-[#232D42] max-w-lg mx-auto font-sans shadow-2xl relative overflow-hidden space-y-5" style="width: 100%; min-width: 320px;">
+          
+          <!-- Background Grid Texture -->
+          <div class="absolute inset-0 pointer-events-none opacity-5" style="background-image: radial-gradient(#64748B 1px, transparent 1px); background-size: 16px 16px;"></div>
+
+          <!-- Poster Header (Swiss Typographic Grid) -->
+          <div class="border-b-2 border-emerald-500 pb-4 relative z-10">
+            <div class="flex items-center justify-between text-[10px] font-mono text-emerald-400 tracking-widest uppercase mb-1">
+              <span>SHOOT FLOW // PRODUCTION AUDIT</span>
+              <span id="poster-status-badge" class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold">100% VERIFIED</span>
+            </div>
+            <h1 id="poster-project-title" class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase mt-1">默认拍摄项目</h1>
+            <div class="flex items-center justify-between text-xs text-slate-400 mt-2 font-mono">
+              <span id="poster-project-date">DATE: 2026.08.26</span>
+              <span id="poster-project-stats">ITEMS: 36/36 CHECKED</span>
+            </div>
+          </div>
+
+          <!-- Section 1: Financial & Reimbursement Checklist -->
+          <div class="space-y-2 relative z-10">
+            <div class="text-xs font-mono text-amber-400 font-bold flex items-center justify-between border-b border-white/10 pb-1">
+              <span>01 / FINANCIAL & REIMBURSEMENT 财务报销核对</span>
+              <span class="text-[10px]">CORE PROOF</span>
+            </div>
+            <div id="poster-reimbursement-items" class="space-y-1.5 text-xs font-mono">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Section 2: Phase Breakdown Overview -->
+          <div class="space-y-2 relative z-10">
+            <div class="text-xs font-mono text-cyan-400 font-bold flex items-center justify-between border-b border-white/10 pb-1">
+              <span>02 / PRODUCTION PHASES 全流程状态</span>
+              <span class="text-[10px]">VERIFICATION</span>
+            </div>
+            <div id="poster-phase-grid" class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Poster Footer -->
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-[9px] text-slate-500 font-mono relative z-10">
+            <div>
+              <div>AUTHENTICITY: YPP_SECURE_ID_<span id="poster-sync-key">PENGPENG</span></div>
+              <div>VERIFIED AT: <span id="poster-generated-time">2026-08-26</span></div>
+            </div>
+            <div class="text-right font-bold text-emerald-400 text-[10px]">
+              SHOOT FLOW CERTIFIED ✓
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 border-t border-brand-border flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span class="text-[11px] text-slate-400">💡 支持一键生成 Retina 高清长图发给制片/财务</span>
+        <div class="flex items-center space-x-2 w-full sm:w-auto">
+          <button onclick="copySummaryToClipboard()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 font-medium transition active:scale-95">
+            📋 复制文本
+          </button>
+          <button id="btn-save-poster-img" onclick="downloadPosterImage()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-brand-emerald hover:bg-emerald-400 text-black text-xs font-bold transition flex items-center justify-center space-x-1.5 active:scale-95 shadow-lg shadow-emerald-500/20">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>下载高清图片</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-brand-card border border-brand-border text-slate-100 text-xs px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 pointer-events-none">
     <i data-lucide="check-circle" class="w-4 h-4 text-brand-emerald" id="toast-icon"></i>
@@ -532,6 +699,7 @@
     // ==========================================
     function initApp() {
       try {
+      initTheme();
       loadLocalData();
       const contentTextarea = document.getElementById('input-item-content');
       if (contentTextarea) {
@@ -1037,6 +1205,7 @@
         const criticalUnchecked = proj.phases[phaseIndex].items.filter(i => i.isCritical && !i.checked);
         if (criticalUnchecked.length > 0) {
           showToast('⚠️ 致命高危项未确认，禁止收起！');
+          triggerHaptic('warning');
           const card = document.getElementById(`phase-card-${phaseIndex}`);
           if (card) {
             card.classList.add('animate-shake');
@@ -1055,11 +1224,13 @@
 
       const item = proj.phases[phaseIndex].items[itemIndex];
       item.checked = !item.checked;
+      triggerHaptic(item.checked ? 'light' : 'medium');
 
       const phase = proj.phases[phaseIndex];
       const allChecked = phase.items.every(i => i.checked);
       if (allChecked && item.checked) {
         triggerConfetti();
+        triggerHaptic('success');
         showToast(`🎉 阶段完成: ${phase.title}`);
         
         if (phaseIndex + 1 < proj.phases.length) {
@@ -1159,6 +1330,144 @@
       showToast(`🔑 已切换密钥: ${input}`);
       renderUI();
       await pullFromCloud();
+    }
+
+    
+    // ==========================================
+    // 7. HAPTIC, THEME & SWISS POSTER EXPORT
+    // ==========================================
+    function triggerHaptic(type = 'light') {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try {
+          if (type === 'light') navigator.vibrate(12);
+          else if (type === 'medium') navigator.vibrate(25);
+          else if (type === 'heavy') navigator.vibrate([20, 40, 20]);
+          else if (type === 'warning') navigator.vibrate([40, 80, 40]);
+          else if (type === 'success') navigator.vibrate([15, 30, 40]);
+        } catch (e) {}
+      }
+    }
+
+    let currentTheme = localStorage.getItem('shootflow_theme') || 'dark';
+    function initTheme() {
+      if (currentTheme === 'light') {
+        document.documentElement.classList.add('theme-light');
+        const icon = document.getElementById('theme-icon');
+        if (icon) icon.textContent = '🌙';
+      } else {
+        document.documentElement.classList.remove('theme-light');
+        const icon = document.getElementById('theme-icon');
+        if (icon) icon.textContent = '☀️';
+      }
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('shootflow_theme', currentTheme);
+      initTheme();
+      triggerHaptic('medium');
+      showToast(currentTheme === 'light' ? '☀️ 已切换为烈日户外高对比模式' : '🌙 已切换为暗夜模式');
+    }
+
+    function openPosterModal() {
+      const proj = getCurrentProject();
+      if (!proj) return;
+      triggerHaptic('medium');
+
+      document.getElementById('poster-project-title').textContent = proj.name;
+      document.getElementById('poster-project-date').textContent = 'DATE: ' + (proj.date || '2026.08.26');
+      document.getElementById('poster-sync-key').textContent = getSyncKey().toUpperCase();
+      document.getElementById('poster-generated-time').textContent = new Date().toLocaleString();
+
+      let totalItems = 0;
+      let totalChecked = 0;
+      proj.phases.forEach(p => {
+        totalItems += p.items.length;
+        totalChecked += p.items.filter(i => i.checked).length;
+      });
+      const pct = totalItems > 0 ? Math.round((totalChecked / totalItems) * 100) : 0;
+      document.getElementById('poster-project-stats').textContent = `ITEMS: ${totalChecked}/${totalItems} CHECKED`;
+      document.getElementById('poster-status-badge').textContent = `${pct}% VERIFIED`;
+
+      // Render Reimbursement Items (Phase 5 or tag-based)
+      const reimbContainer = document.getElementById('poster-reimbursement-items');
+      const wrapPhase = proj.phases.find(p => p.id === 'phase_wrap') || proj.phases[4];
+      if (wrapPhase && wrapPhase.items) {
+        reimbContainer.innerHTML = wrapPhase.items.map(item => `
+          <div class="flex items-center justify-between py-1 border-b border-white/5 ${item.checked ? 'text-slate-300' : 'text-amber-400 font-semibold'}">
+            <span class="truncate pr-2">${item.checked ? '✓' : '✗'} ${item.text}</span>
+            <span class="text-[10px] px-1 rounded ${item.checked ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'} shrink-0">${item.tag || '报销'}</span>
+          </div>
+        `).join('');
+      } else {
+        reimbContainer.innerHTML = '<div class="text-slate-500">无报销条目</div>';
+      }
+
+      // Render Phase Grid Overview
+      const phaseGrid = document.getElementById('poster-phase-grid');
+      phaseGrid.innerHTML = proj.phases.map((p, idx) => {
+        const pTotal = p.items.length;
+        const pChecked = p.items.filter(i => i.checked).length;
+        const isDone = pTotal > 0 && pChecked === pTotal;
+        return `
+          <div class="p-2 rounded bg-white/5 border border-white/10">
+            <div class="flex justify-between items-center text-[10px] text-slate-400 mb-0.5">
+              <span>${p.code || `PHASE ${idx+1}`}</span>
+              <span class="${isDone ? 'text-emerald-400 font-bold' : 'text-slate-300'}">${pChecked}/${pTotal}</span>
+            </div>
+            <div class="font-bold truncate text-slate-200">${p.title}</div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('poster-modal').classList.remove('hidden');
+      document.getElementById('poster-modal').classList.add('flex');
+      if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e){}
+    }
+
+    function closePosterModal() {
+      document.getElementById('poster-modal').classList.add('hidden');
+      document.getElementById('poster-modal').classList.remove('flex');
+    }
+
+    async function downloadPosterImage() {
+      const cardEl = document.getElementById('swiss-poster-card');
+      const btn = document.getElementById('btn-save-poster-img');
+      if (!cardEl) return;
+      triggerHaptic('success');
+
+      if (typeof html2canvas === 'undefined') {
+        alert('海报渲染引擎加载中，请稍候 2 秒再试...');
+        return;
+      }
+
+      const originalBtnText = btn.innerHTML;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> <span>渲染中...</span>';
+      if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e){}
+
+      try {
+        const canvas = await html2canvas(cardEl, {
+          scale: 2, // Retina 2x Sharpness
+          backgroundColor: '#0B0F17',
+          useCORS: true,
+          logging: false
+        });
+
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const proj = getCurrentProject();
+        const filename = `SHOOT_FLOW_${(proj ? proj.name : '项目').replace(/\s+/g, '_')}_${Date.now()}.png`;
+        link.download = filename;
+        link.href = image;
+        link.click();
+        showToast('🎉 高清复盘海报已下载！');
+      } catch(e) {
+        console.error('Failed to generate image:', e);
+        alert('海报生成失败: ' + e.message);
+      } finally {
+        btn.innerHTML = originalBtnText;
+        if (typeof lucide !== 'undefined') try { lucide.createIcons(); } catch(e){}
+      }
     }
 
     // 6. CUSTOM ITEMS & TEMPLATES
