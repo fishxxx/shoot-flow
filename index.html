@@ -12,6 +12,11 @@
   <link rel="apple-touch-icon" href="icon.svg">
   <title>SHOOT FLOW // 拍摄全流程防忘清单</title>
 
+  <!-- Google Fonts: Editorial Brutalism (Serif + Mono) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
   <!-- Core UI Engine: Local First with CDN Fallback -->
   <script src="lib_tailwind.js"></script>
   <script>
@@ -26,22 +31,23 @@
         extend: {
           colors: {
             brand: {
-              bg: '#000000',          // Pure OLED Black
-              card: '#09090B',        // Zinc-950 (extreme dark gray)
-              cardHover: '#18181B',   // Zinc-900 
-              border: '#27272A',      // Zinc-800
-              emerald: '#FAFAFA',     // Replaced emerald with Cinematic White for primary accents
-              emeraldGlow: 'rgba(250, 250, 250, 0.15)',
-              amber: '#FACC15',       // High-end cinematic gold
-              amberGlow: 'rgba(250, 204, 21, 0.15)',
-              cyan: '#71717A',        // Zinc-500 (muted grey for secondary things instead of cyan)
-              red: '#EF4444',
-              dim: '#52525B'          // Zinc-600
+              bg: '#000000',          // Absolute Black
+              card: '#000000',        // Transparent/Black cards
+              cardHover: '#111111',   // Slight highlight
+              border: '#ffffff',      // Pure White Borders
+              emerald: '#D71E1E',     // Primary Action: Mosby Red
+              emeraldGlow: 'rgba(215, 30, 30, 0.2)',
+              amber: '#1E4BD7',       // Secondary Action: Mosby Blue
+              amberGlow: 'rgba(30, 75, 215, 0.2)',
+              cyan: '#D71E1E',        
+              red: '#D71E1E',
+              dim: '#888888'          // Mid Grey
             }
           },
           fontFamily: {
-            mono: ['JetBrains Mono', 'Fira Code', 'Menlo', 'monospace'],
-            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'sans-serif']
+            mono: ['"Space Mono"', 'JetBrains Mono', 'Menlo', 'monospace'],
+            serif: ['"Playfair Display"', 'Georgia', '"Times New Roman"', 'STSong', 'serif'],
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'sans-serif']
           }
         }
       }
@@ -568,72 +574,67 @@
 
   </style>
 </head>
-<body class="bg-brand-bg text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-emerald selection:text-black pb-24">
+<body class="bg-brand-bg text-white min-h-screen font-mono antialiased selection:bg-brand-emerald selection:text-white pb-24">
 
   <!-- FULLSCREEN PASSCODE LOCK OVERLAY (安全访问鉴权锁屏) -->
-  <div id="auth-lock-overlay" class="fixed inset-0 z-[100] bg-[#0B0F17]/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 select-none transition-all duration-300">
-    <div id="auth-card" class="bg-brand-card border border-brand-border/80 rounded-3xl max-w-sm w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden text-center transition-all duration-300">
-      
-      <!-- Background Ambient Glow -->
-      <div class="absolute -top-16 -left-16 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
-      <div class="absolute -bottom-16 -right-16 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+  <div id="auth-lock-overlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-4 select-none transition-all duration-300">
+    <div id="auth-card" class="bg-black border-2 border-white max-w-sm w-full p-6 sm:p-8 space-y-6 relative overflow-hidden text-center transition-all duration-300 shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
 
       <!-- Icon & Branding -->
       <div class="space-y-2 relative z-10">
-        <div class="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-brand-emerald mx-auto shadow-lg shadow-emerald-500/10">
+        <div class="w-14 h-14 border-2 border-white bg-black flex items-center justify-center text-white mx-auto shadow-[4px_4px_0_0_rgba(255,255,255,1)]">
           <i data-lucide="lock" class="w-7 h-7 stroke-[2.2]"></i>
         </div>
-        <h2 class="text-lg sm:text-xl font-black tracking-wider text-slate-100 uppercase">SHOOT FLOW</h2>
-        <p class="text-xs text-slate-400 font-medium">影视出工与财务防忘系统 · 内部专用</p>
+        <h2 class="text-xl sm:text-2xl font-serif font-bold tracking-tight text-white uppercase mt-4">SHOOT FLOW</h2>
+        <p class="text-xs text-brand-dim font-mono uppercase">影视出工与财务防忘系统 · ARCHIVE</p>
       </div>
 
       <!-- Passcode Input Form -->
       <div class="space-y-3 relative z-10 text-left">
         <div>
-          <label class="block text-[11px] text-slate-400 mb-1 font-semibold">访问密码 (默认: pengpeng)</label>
+          <label class="block text-[11px] text-brand-dim mb-1 font-mono uppercase font-bold">Access Code</label>
           <div class="relative">
-            <input type="password" id="input-auth-passcode" placeholder="输入访问密码..." class="w-full bg-brand-bg border border-brand-border rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono tracking-widest focus:outline-none focus:border-brand-emerald focus:ring-1 focus:ring-brand-emerald transition pr-10" autocomplete="current-password">
-            <button type="button" onclick="togglePasscodeVisibility()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1">
+            <input type="password" id="input-auth-passcode" placeholder="ENTER PASSCODE..." class="w-full bg-black border border-white px-3.5 py-2.5 text-sm text-white font-mono tracking-widest focus:outline-none focus:border-brand-emerald focus:ring-1 focus:ring-brand-emerald transition pr-10" autocomplete="current-password">
+            <button type="button" onclick="togglePasscodeVisibility()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-white p-1">
               <i data-lucide="eye" id="icon-passcode-eye" class="w-4 h-4"></i>
             </button>
           </div>
-          <p id="auth-error-msg" class="text-[11px] text-red-400 font-semibold mt-1 hidden"></p>
+          <p id="auth-error-msg" class="text-[11px] text-brand-red font-mono font-bold mt-1 hidden uppercase"></p>
         </div>
 
-        <label class="flex items-center space-x-2 text-xs text-slate-400 cursor-pointer pt-1">
-          <input type="checkbox" id="auth-remember-me" checked class="rounded border-slate-600 bg-brand-bg text-brand-emerald focus:ring-brand-emerald w-4 h-4">
-          <span>在此设备上保持登录 (30天免密)</span>
+        <label class="flex items-center space-x-2 text-xs text-brand-dim cursor-pointer pt-1 font-mono uppercase">
+          <input type="checkbox" id="auth-remember-me" checked class="border-white bg-black text-white focus:ring-white w-4 h-4 rounded-none">
+          <span>Remember Me (30 Days)</span>
         </label>
       </div>
 
       <!-- Action Button -->
-      <div class="space-y-2 relative z-10">
-        <button id="btn-submit-auth" onclick="handleVerifyPasscode()" class="w-full py-3 rounded-xl bg-brand-emerald hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2">
-          <span>🚀 验证并进入</span>
+      <div class="space-y-2 relative z-10 mt-6">
+        <button id="btn-submit-auth" onclick="handleVerifyPasscode()" class="w-full py-3 border-2 border-white bg-white text-black font-bold font-mono text-sm uppercase tracking-wider transition-all hover:bg-black hover:text-white shadow-[4px_4px_0_0_rgba(255,255,255,1)] hover:translate-y-1 hover:translate-x-1 hover:shadow-none flex items-center justify-center space-x-2">
+          <span>UNLOCK</span>
         </button>
-        <p class="text-[10px] text-slate-500">💡 提示：输入同步密钥或初始密码即可解锁</p>
+        <p class="text-[10px] font-mono text-brand-dim uppercase mt-4">SYS.AUTH / PENGPENG</p>
       </div>
 
     </div>
   </div>
 
 
-  <!-- IOS NATIVE STYLE TOP NAV -->
-  <header class="sticky top-0 z-40 bg-brand-bg/80 backdrop-blur-xl border-b border-white/5 pb-2 pt-safe-top">
-    <!-- Slim Segmented Control Header -->
+  <!-- BRUTALIST ARCHIVE TOP NAV -->
+  <header class="sticky top-0 z-40 bg-black border-b border-white pb-2 pt-safe-top">
     <div class="px-4 py-2 flex items-center justify-between">
       <!-- Sync Status (Left) -->
-      <div id="sync-status" class="flex items-center gap-1.5 text-[10px] text-brand-dim opacity-50">
-        <span class="w-1.5 h-1.5 rounded-full bg-white/40 shadow-[0_0_8px_rgba(255,255,255,0.4)]"></span> 本地就绪
+      <div id="sync-status" class="flex items-center gap-1.5 text-[10px] text-brand-dim font-mono uppercase">
+        <span class="w-1.5 h-1.5 bg-brand-dim"></span> LOCAL
       </div>
 
       <!-- Segmented Control (Center) -->
-      <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/10 mx-auto">
-        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="px-5 py-1 rounded-md text-xs font-bold transition-all bg-white text-black shadow-sm flex items-center gap-1.5">
-          <i data-lucide="check-square" class="w-3.5 h-3.5"></i> 拍摄清单
+      <div class="flex border border-white mx-auto">
+        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="px-5 py-1 text-xs font-bold font-mono uppercase transition-all bg-brand-emerald text-white border-r border-white flex items-center gap-1.5">
+          <i data-lucide="check-square" class="w-3.5 h-3.5"></i> FLOW
         </button>
-        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="px-5 py-1 rounded-md text-xs font-semibold transition-all text-brand-dim hover:text-white flex items-center gap-1.5">
-          <i data-lucide="calculator" class="w-3.5 h-3.5"></i> 公账台账
+        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="px-5 py-1 text-xs font-semibold font-mono uppercase transition-all bg-black text-brand-dim hover:text-white flex items-center gap-1.5">
+          <i data-lucide="calculator" class="w-3.5 h-3.5"></i> LEDGER
         </button>
       </div>
       
@@ -646,23 +647,23 @@
   <main class="max-w-4xl mx-auto px-4 sm:px-6 pt-4 pb-28 space-y-4">
     
     <!-- Ledger Navigation Badge & Actions (Only visible in ledger view) -->
-    <div id="ledger-top-actions" class="hidden flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3">
+    <div id="ledger-top-actions" class="hidden flex-wrap items-center justify-between gap-2 border-b border-white pb-3">
       <div class="flex items-center gap-2">
-        <span class="text-sm font-bold text-white">台账概览</span>
-        <span id="ledger-nav-badge" class="px-1.5 py-0.5 rounded text-[10px] bg-brand-amber/10 text-brand-amber font-mono">￥0</span>
+        <span class="text-sm font-bold font-serif text-white uppercase">Ledger Overview</span>
+        <span id="ledger-nav-badge" class="px-2 py-0.5 border border-white text-[10px] bg-black text-white font-mono">￥0</span>
       </div>
-      <div class="flex items-center space-x-1.5">
-        <button onclick="copyLedgerWechatText()" class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-medium transition flex items-center space-x-1 active:scale-95" title="复制发给熊涛的微信对账单">
-          <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
-          <span class="hidden xs:inline">对账单</span>
+      <div class="flex items-center space-x-1.5 font-mono">
+        <button onclick="copyLedgerWechatText()" class="px-3 py-1.5 border border-white hover:bg-white hover:text-black text-white text-[10px] uppercase font-bold transition flex items-center space-x-1 active:scale-95" title="复制微信对账单">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span class="hidden xs:inline">COPY</span>
         </button>
-        <button onclick="openNewRentalModal()" class="px-2.5 py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 text-xs font-bold transition flex items-center space-x-1 active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+        <button onclick="openNewRentalModal()" class="px-3 py-1.5 border border-brand-amber bg-brand-amber text-white text-[10px] uppercase font-bold transition flex items-center space-x-1 active:scale-95 shadow-[4px_4px_0_0_rgba(255,255,255,1)] hover:translate-y-1 hover:shadow-none">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-          <span>记租借</span>
+          <span>RENTAL</span>
         </button>
-        <button onclick="openNewPaModal()" class="px-2.5 py-1.5 rounded-lg bg-transparent border border-white/20 hover:border-white/50 text-slate-200 text-xs font-medium transition flex items-center space-x-1 active:scale-95">
-          <i data-lucide="receipt" class="w-3.5 h-3.5 text-brand-dim"></i>
-          <span>记公账</span>
+        <button onclick="openNewPaModal()" class="px-3 py-1.5 border border-brand-emerald bg-brand-emerald text-white text-[10px] uppercase font-bold transition flex items-center space-x-1 active:scale-95 shadow-[4px_4px_0_0_rgba(255,255,255,1)] hover:translate-y-1 hover:shadow-none">
+          <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+          <span>PA EXPENSE</span>
         </button>
       </div>
     </div>
@@ -671,12 +672,12 @@
     <div id="view-checklist" class="space-y-4">
 
     <!-- PROJECT INFO (Minimal text only) -->
-    <div id="project-banner" class="px-2 pb-2">
+    <div id="project-banner" class="px-2 pb-2 border-b border-white mb-4">
       <div class="flex items-center space-x-2 mb-1">
-        <span class="px-1.5 py-0.5 text-[10px] rounded bg-white/5 text-brand-dim font-mono hidden" id="project-date">2026.08.23</span>
-        <h2 class="text-xs font-bold text-white hidden" id="project-title-display">默认拍摄项目</h2>
+        <span class="px-1.5 py-0.5 text-[10px] border border-brand-dim text-brand-dim font-mono hidden" id="project-date">2026.08.23</span>
+        <h2 class="text-xs font-bold font-serif text-white hidden" id="project-title-display">默认拍摄项目</h2>
       </div>
-      <p class="text-[11px] text-brand-dim/60 italic" id="project-desc-display">飞行员式逐项检查，杜绝忘带设备、漏报销等惨痛教训。</p>
+      <p class="text-[11px] font-mono text-brand-dim uppercase" id="project-desc-display">飞行员式逐项检查，杜绝忘带设备、漏报销等惨痛教训。</p>
     </div>
 
     <!-- PHASE ACCORDION CONTAINER -->
@@ -685,10 +686,10 @@
     </div>
 
     <!-- BOTTOM FLOATING QUICK TIPS (ADHD HELPER) -->
-    <div id="adhd-tips-container" class="mt-8 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-start space-x-3">
-      <i data-lucide="sparkles" class="w-4 h-4 text-brand-amber shrink-0 mt-0.5"></i>
-      <div class="space-y-1">
-        <div class="font-semibold text-slate-200 flex items-center gap-1.5">
+    <div id="adhd-tips-container" class="mt-8 p-4 bg-black border border-white text-xs text-brand-dim flex items-start space-x-3">
+      <i data-lucide="info" class="w-4 h-4 text-white shrink-0 mt-0.5"></i>
+      <div class="space-y-1 font-mono">
+        <div class="font-bold text-white uppercase flex items-center gap-1.5">
           <span>ADHD 拍摄减负心法</span>
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">GOLDEN RULES</span>
         </div>
@@ -2335,26 +2336,26 @@
       `;
     }
 
-    // Tag Badge Semantic Color Generator
+    // Tag Badge Semantic Color Generator (Brutalist High Contrast)
     function getTagBadgeClass(tag) {
-      if (!tag || tag === '自定义') return 'bg-slate-800 text-slate-200 border-slate-600';
+      if (!tag || tag === '自定义') return 'bg-black text-white border-white';
       // 🔌 电力能源 — amber
-      if (/电力|电池|充电|电源|散热|应急电/i.test(tag)) return 'bg-amber-950/50 text-amber-300 border-amber-500/40';
+      if (/电力|电池|充电|电源|散热|应急电/i.test(tag)) return 'bg-brand-amber text-white border-brand-amber';
       // 📷 器材设备 — cyan
-      if (/器材|相机|镜头|机身|灯光|附件|导播|线材/i.test(tag)) return 'bg-cyan-950/50 text-cyan-300 border-cyan-500/40';
-      // 💰 财务报销 — purple
-      if (/报销|财务|发票|打车|餐费|小票|结算|应付|记账|租赁报销|差旅|货运|餐饮/i.test(tag)) return 'bg-purple-950/50 text-purple-300 border-purple-500/40';
+      if (/器材|相机|镜头|机身|灯光|附件|导播|线材/i.test(tag)) return 'bg-white text-black border-white';
+      // 💰 财务报销 — purple -> using solid white inverted
+      if (/报销|财务|发票|打车|餐费|小票|结算|应付|记账|租赁报销|差旅|货运|餐饮/i.test(tag)) return 'bg-white text-black border-white';
       // 💾 数据安全 — emerald
-      if (/数据|DIT|备份|存储|双备份|元数据|安全|工程/i.test(tag)) return 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40';
+      if (/数据|DIT|备份|存储|双备份|元数据|安全|工程/i.test(tag)) return 'bg-brand-emerald text-white border-brand-emerald';
       // 🚨 高危红线 — red
-      if (/心法|高危|红线|遗漏|认知/i.test(tag)) return 'bg-red-950/50 text-red-300 border-red-500/40';
+      if (/心法|高危|红线|遗漏|认知/i.test(tag)) return 'bg-brand-red text-white border-brand-red shadow-[2px_2px_0_0_rgba(255,255,255,1)]';
       // 🎯 需求策划 — blue
-      if (/需求|方案|脚本|分镜|商务|租赁(?!报销)/i.test(tag)) return 'bg-blue-950/50 text-blue-300 border-blue-500/40';
+      if (/需求|方案|脚本|分镜|商务|租赁(?!报销)/i.test(tag)) return 'bg-brand-amber text-white border-brand-amber';
       // 👥 人员协调 — indigo
-      if (/人员|排期|场地|证件|物流|容灾|随身|箱/i.test(tag)) return 'bg-indigo-950/50 text-indigo-300 border-indigo-500/40';
+      if (/人员|排期|场地|证件|物流|容灾|随身|箱/i.test(tag)) return 'bg-black text-brand-dim border-brand-dim';
       // 🎵 音视频技术 — teal
-      if (/音频|布光|色彩|画面|推流|网络|同步|参数|场记|视听|接口/i.test(tag)) return 'bg-teal-950/50 text-teal-300 border-teal-500/40';
-      return 'bg-slate-800 text-slate-300 border-slate-600';
+      if (/音频|布光|色彩|画面|推流|网络|同步|参数|场记|视听|接口/i.test(tag)) return 'bg-brand-dim text-black border-brand-dim';
+      return 'bg-black text-white border-white';
     }
 
     // 4. RENDERING & UI UPDATES
@@ -2606,105 +2607,104 @@
 
         const card = document.createElement('div');
         card.id = `phase-card-${phaseIndex}`;
-        card.className = `rounded-2xl border transition-all duration-300 overflow-hidden ${
+        // Brutalist Box
+        card.className = `border transition-all duration-300 overflow-hidden ${
           isComplete 
-            ? 'bg-brand-card/70 border-emerald-500/30' 
-            : 'bg-brand-card border-brand-border hover:border-slate-700'
+            ? 'bg-black border-brand-emerald' 
+            : 'bg-black border-white hover:border-white'
         }`;
 
         card.innerHTML = `
           <div class="p-4 sm:p-5 cursor-pointer select-none flex items-center justify-between transition-colors ${
-            isComplete ? 'bg-emerald-950/20' : 'bg-brand-card'
+            isComplete ? 'bg-brand-emerald text-white' : 'bg-black text-white border-b border-white'
           }" onclick="togglePhase(${phaseIndex})">
             
             <div class="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
+              <div class="w-9 h-9 border border-current flex items-center justify-center shrink-0 transition-all ${
                 isComplete
-                  ? 'bg-emerald-500/20 text-brand-emerald border-emerald-500/40 glow-emerald'
-                  : phaseChecked > 0
-                    ? 'bg-amber-500/10 text-brand-amber border-amber-500/30'
-                    : 'bg-slate-800/80 text-cyan-400 border-slate-700/80 shadow-inner'
+                  ? 'bg-white text-brand-emerald'
+                  : 'bg-black text-white'
               }">
-                <i data-lucide="${isComplete ? 'check' : phase.icon || 'circle'}" class="w-4 h-4"></i>
+                <i data-lucide="${isComplete ? 'check' : phase.icon || 'square'}" class="w-4 h-4"></i>
               </div>
 
               <div class="flex-1 min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
-                  <span class="font-mono text-xs font-bold text-white tracking-wider">${phase.code}</span>
-                  <span class="text-xs px-2.5 py-0.5 rounded-md font-semibold tracking-wide border transition-all ${
+                  <span class="font-mono text-xs font-bold uppercase tracking-wider">${phase.code}</span>
+                  <span class="text-[10px] px-1.5 py-0.5 border font-mono tracking-wide ${
                     isComplete 
-                      ? 'bg-white/10 text-white border-white/20' 
-                      : 'bg-white/5 text-slate-300 border-white/5'
+                      ? 'border-white text-white' 
+                      : 'border-white text-white'
                   }">${phase.badge}</span>
                 </div>
-                <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2 tracking-tight">
+                <h3 class="text-lg sm:text-xl font-bold font-serif truncate mt-0.5 flex items-center gap-2 tracking-tight">
                   ${phase.title}
-                  <span class="text-xs font-normal text-brand-dim hidden sm:inline">— ${phase.subtitle}</span>
+                  <span class="text-xs font-mono font-normal opacity-70 hidden sm:inline">— ${phase.subtitle}</span>
                 </h3>
               </div>
             </div>
 
             <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
               <div class="text-right">
-                <div class="text-xs font-mono font-semibold ${isComplete ? 'text-white' : 'text-slate-400'}">
+                <div class="text-xs font-mono font-bold">
                   ${phaseChecked} / ${phaseTotal}
                 </div>
-                <div class="text-[10px] text-brand-dim font-mono">${percent}%</div>
+                <div class="text-[10px] opacity-70 font-mono">${percent}%</div>
               </div>
-              ${zenModePhase === null ? `<button onclick="event.stopPropagation(); toggleZenMode(${phaseIndex})" class="px-2.5 py-1 text-[10px] rounded bg-white/5 border border-white/10 hover:border-white/30 text-white font-bold transition mr-1 sm:mr-3 shadow-sm flex items-center gap-1 active:scale-95">🎯 专注</button>` : ''}
-              <div class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 border border-white/10 transition-transform ${isExpanded ? 'rotate-180' : ''}">
+              ${zenModePhase === null ? `<button onclick="event.stopPropagation(); toggleZenMode(${phaseIndex})" class="px-2.5 py-1 text-[10px] border border-current font-bold transition mr-1 sm:mr-3 shadow-[2px_2px_0_0_currentColor] active:translate-y-0.5 active:shadow-none flex items-center gap-1 font-mono uppercase">FOCUS</button>` : ''}
+              <div class="w-6 h-6 flex items-center justify-center border border-current transition-transform ${isExpanded ? 'rotate-180' : ''}">
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
               </div>
             </div>
           </div>
 
-          <div class="${isExpanded ? 'block' : 'hidden'} border-t border-white/5 bg-transparent p-4 sm:p-5 space-y-3">
-            <p class="text-xs text-brand-dim italic mb-2">${phase.description}</p>
+          <div class="${isExpanded ? 'block' : 'hidden'} bg-black p-4 sm:p-5 space-y-3">
+            <p class="text-xs font-mono text-brand-dim mb-2 uppercase">${phase.description}</p>
             
             ${isCameraOnsetPhase(phase) ? renderCameraReminderBanner() : ''}
 
             <div class="space-y-2">
               ${phase.items.map((item, itemIndex) => `
-                <div class="group flex items-center space-x-3 p-3 sm:p-2.5 rounded-xl transition-all border active:bg-brand-cardHover ${
+                <div class="group flex items-center space-x-3 p-3 sm:p-2.5 border transition-all active:bg-white/5 ${
                   item.checked 
-                    ? 'bg-brand-card border-transparent hover:border-white/5 opacity-80' 
-                    : 'bg-brand-card border-white/5 hover:border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]'
+                    ? 'border-white/20 opacity-50 bg-white/5' 
+                    : 'border-white hover:border-white shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]'
                 }">
                   
-                  <button onclick="toggleItem(${phaseIndex}, ${itemIndex})" class="w-6 h-6 sm:w-5 sm:h-5 rounded-lg flex items-center justify-center border transition-all shrink-0 active:scale-90 ${
+                  <button onclick="toggleItem(${phaseIndex}, ${itemIndex})" class="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center border transition-all shrink-0 active:scale-90 ${
                     item.checked 
-                      ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]' 
+                      ? 'bg-brand-emerald border-brand-emerald text-white' 
                       : (item.isCritical && !item.checked)
-                        ? 'border-brand-red bg-brand-bg shadow-[0_0_8px_rgba(239,68,68,0.4)]'
-                        : 'border-white/20 bg-brand-bg hover:border-white'
+                        ? 'border-brand-emerald bg-black'
+                        : 'border-white bg-black hover:bg-white hover:text-black'
 
                   }">
-                    ${item.checked ? '<i data-lucide="check" class="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-[11px] sm:text-[10px]">⚠️</span>' : '')}
+                    ${item.checked ? '<i data-lucide="check" class="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-[11px] sm:text-[10px]">!</span>' : '')}
                   </button>
 
                   <div class="flex-1 min-w-0 cursor-pointer select-none" onclick="toggleItem(${phaseIndex}, ${itemIndex})">
                     <div class="flex items-center space-x-2">
-                      <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-semibold font-mono border shrink-0 ${getTagBadgeClass(item.tag)}">
-                        ${item.tag || '检查'}
+                      <span class="text-[10px] sm:text-xs px-2 py-0.5 border font-semibold font-mono uppercase shrink-0 ${getTagBadgeClass(item.tag)}">
+                        ${item.tag || 'CHECK'}
                       </span>
-                      <span class="text-xs sm:text-sm font-medium ${(item.isCritical && !item.checked) ? 'text-red-400 font-bold' : 'text-slate-200'} item-text leading-snug ${item.checked ? 'checked-text' : ''}">
+                      <span class="text-xs sm:text-sm font-bold ${(item.isCritical && !item.checked) ? 'text-brand-red' : 'text-white'} item-text leading-snug ${item.checked ? 'checked-text line-through opacity-50 decoration-brand-emerald decoration-2' : ''}">
                         ${item.text}
                       </span>
                     </div>
                     ${item.note ? `
-                      <div class="text-[11px] font-mono text-slate-400 mt-0.5 pl-0.5 flex items-center space-x-1 leading-tight">
-                        <span class="text-cyan-400/80 font-bold">↳</span>
+                      <div class="text-[11px] font-mono text-brand-dim mt-0.5 pl-0.5 flex items-center space-x-1 leading-tight">
+                        <span class="text-brand-emerald font-bold">↳</span>
                         <span>${item.note}</span>
                       </div>
                     ` : ''}
                   </div>
 
-                  <div class="flex space-x-1 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity ml-1.5 shrink-0">
-                    <button onclick="event.stopPropagation(); openEditItemModal(${phaseIndex}, ${itemIndex})" class="w-7 h-7 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-brand-cyan active:bg-brand-border/80 transition" title="编辑">
-                      <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                  <div class="flex space-x-1 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity ml-1.5 shrink-0 font-mono">
+                    <button onclick="event.stopPropagation(); openEditItemModal(${phaseIndex}, ${itemIndex})" class="w-7 h-7 sm:w-6 sm:h-6 flex items-center justify-center text-brand-dim hover:text-white border border-transparent hover:border-white transition" title="编辑">
+                      <i data-lucide="edit-2" class="w-3 h-3"></i>
                     </button>
-                    <button onclick="event.stopPropagation(); deleteItem(${phaseIndex}, ${itemIndex})" class="w-7 h-7 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-red-400 active:bg-brand-border/80 transition" title="删除">
-                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <button onclick="event.stopPropagation(); deleteItem(${phaseIndex}, ${itemIndex})" class="w-7 h-7 sm:w-6 sm:h-6 flex items-center justify-center text-brand-dim hover:text-brand-red border border-transparent hover:border-brand-red transition" title="删除">
+                      <i data-lucide="trash-2" class="w-3 h-3"></i>
                     </button>
                   </div>
                 </div>
@@ -2712,9 +2712,9 @@
             </div>
 
             <div class="pt-2 flex justify-end">
-              <button onclick="openAddItemModal(${phaseIndex})" class="px-3 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-300 hover:text-brand-emerald flex items-center space-x-1 transition active:scale-95">
+              <button onclick="openAddItemModal(${phaseIndex})" class="px-3 py-1.5 bg-black border border-white text-[10px] font-mono uppercase text-white hover:bg-white hover:text-black flex items-center space-x-1 transition active:scale-95 shadow-[2px_2px_0_0_rgba(255,255,255,1)] hover:shadow-none hover:translate-y-0.5 hover:translate-x-0.5">
                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                <span>添加本阶段事项</span>
+                <span>ADD ITEM</span>
               </button>
             </div>
           </div>
@@ -2728,18 +2728,18 @@
         if (proj.status === 'archived') {
           container.innerHTML += `
             <div class="mt-8 text-center">
-              <button onclick="toggleArchiveProject('${proj.id}')" class="px-6 py-2.5 rounded-lg bg-brand-card border border-brand-border hover:border-brand-cyan hover:text-brand-cyan text-slate-400 text-sm font-semibold transition group flex items-center justify-center mx-auto space-x-2">
+              <button onclick="toggleArchiveProject('${proj.id}')" class="px-6 py-2.5 bg-black border border-white hover:bg-white hover:text-black text-white text-sm font-mono font-bold uppercase transition group flex items-center justify-center mx-auto space-x-2">
                 <i data-lucide="archive-restore" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
-                <span>取消归档并恢复为活跃项目</span>
+                <span>UNARCHIVE PROJECT</span>
               </button>
             </div>
           `;
         } else {
           container.innerHTML += `
             <div class="mt-8 text-center">
-              <button onclick="toggleArchiveProject('${proj.id}')" class="px-6 py-2.5 rounded-lg bg-brand-card border border-brand-border hover:border-brand-emerald hover:text-brand-emerald text-slate-400 text-sm font-semibold transition group flex items-center justify-center mx-auto space-x-2">
+              <button onclick="toggleArchiveProject('${proj.id}')" class="px-6 py-2.5 bg-brand-emerald border border-brand-emerald hover:bg-black hover:text-brand-emerald text-white text-sm font-mono font-bold uppercase transition group flex items-center justify-center mx-auto space-x-2 shadow-[4px_4px_0_0_rgba(255,255,255,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1">
                 <i data-lucide="package-check" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
-                <span>完结并归档项目</span>
+                <span>ARCHIVE PROJECT</span>
               </button>
             </div>
           `;
@@ -3685,82 +3685,81 @@
     initApp();
   </script>
 
-  <!-- FLOATING BOTTOM DOCK (iOS Vibe) -->
-  <div class="fixed bottom-4 left-0 right-0 z-50 px-4 pointer-events-none pb-safe-bottom">
-    <!-- Slim Horizontal Progress Bar attached to the dock -->
-    <div class="max-w-sm mx-auto mb-2 pointer-events-none">
-      <div class="h-1 bg-white/10 rounded-full overflow-hidden">
-        <div id="progress-bar-dock" class="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all" style="width: 0%"></div>
-      </div>
+  <!-- BRUTALIST BOTTOM DOCK -->
+  <div class="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white pb-safe-bottom">
+    
+    <!-- Progress Bar (Harsh red line) -->
+    <div class="w-full h-1 bg-brand-border">
+      <div id="progress-bar-dock" class="h-full bg-brand-emerald transition-all duration-300" style="width: 0%"></div>
     </div>
 
     <!-- Main Dock -->
-    <div class="max-w-sm mx-auto pointer-events-auto bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-1.5 flex items-center justify-between">
+    <div class="w-full flex items-center justify-between p-2">
 
       <!-- 1. Project Switcher -->
-      <button id="btn-projects-dock" onclick="openProjectModal()" class="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-white/10 transition active:scale-95 shrink-0 max-w-[45%]">
-        <i data-lucide="folder-kanban" class="w-4 h-4 text-brand-amber shrink-0"></i>
+      <button id="btn-projects-dock" onclick="openProjectModal()" class="flex items-center space-x-2 px-3 py-1.5 border border-white hover:bg-white hover:text-black text-white transition-colors max-w-[45%]">
+        <i data-lucide="folder" class="w-4 h-4 shrink-0"></i>
         <div class="flex flex-col items-start leading-none min-w-0">
-          <span class="text-[9px] text-brand-dim mb-0.5 whitespace-nowrap">当前项目</span>
-          <span id="current-project-label-dock" class="text-[11px] font-bold text-white truncate w-full text-left">默认拍摄项目</span>
+          <span class="text-[9px] uppercase font-mono mb-0.5 whitespace-nowrap">PROJECT</span>
+          <span id="current-project-label-dock" class="text-xs font-bold font-serif truncate w-full text-left">默认拍摄项目</span>
         </div>
       </button>
 
       <!-- 2. Progress / Stats -->
       <div class="flex flex-col items-center justify-center px-2 shrink-0">
-        <span id="progress-percent-dock" class="text-sm font-mono font-bold text-white tracking-tight">0%</span>
+        <span id="progress-percent-dock" class="text-xl font-mono font-bold text-white tracking-tighter">0%</span>
         <span id="stats-checked" class="text-[8px] text-brand-dim font-mono hidden">0/0</span> <!-- Hidden but kept for JS compatibility -->
       </div>
 
-      <div class="flex items-center space-x-1 shrink-0 pr-1">
+      <div class="flex items-center space-x-2 shrink-0">
         <!-- 3. Add New Project -->
-        <button onclick="openNewProjectModal()" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-zinc-200 active:scale-90 transition shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-          <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i>
+        <button onclick="openNewProjectModal()" class="w-10 h-10 border border-white bg-white text-black flex items-center justify-center hover:bg-brand-emerald hover:border-brand-emerald hover:text-white transition-colors">
+          <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
 
         <!-- 4. Overflow Menu -->
         <div class="relative" id="overflow-menu-wrapper-dock">
-          <button onclick="document.getElementById('overflow-dropdown-dock').classList.toggle('hidden')" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 active:scale-90 transition">
-            <i data-lucide="menu" class="w-4 h-4"></i>
+          <button onclick="document.getElementById('overflow-dropdown-dock').classList.toggle('hidden')" class="w-10 h-10 border border-white flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors">
+            <i data-lucide="menu" class="w-5 h-5"></i>
           </button>
           
-          <div id="overflow-dropdown-dock" class="hidden absolute bottom-full right-0 mb-3 w-48 bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_50px_rgba(0,0,0,1)] overflow-hidden z-50 origin-bottom-right animate-in fade-in zoom-in-95">
-            <div class="px-3 py-2.5 border-b border-white/10 flex items-center justify-between bg-white/5">
-              <span class="text-xs text-brand-dim">云端同步</span>
-              <button onclick="openSyncKeyModal()" class="flex items-center gap-1 text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-slate-300 hover:text-white transition">
-                <i data-lucide="key-round" class="w-3 h-3 text-brand-amber"></i>
-                <span id="sync-key-label" class="font-mono">pengpeng</span>
+          <div id="overflow-dropdown-dock" class="hidden absolute bottom-full right-0 mb-2 w-48 bg-black border border-white z-50 origin-bottom-right">
+            <div class="px-3 py-2 border-b border-white flex items-center justify-between font-mono uppercase">
+              <span class="text-[10px] text-brand-dim">SYNC</span>
+              <button onclick="openSyncKeyModal()" class="flex items-center gap-1 text-[10px] text-white hover:text-brand-emerald transition-colors">
+                <i data-lucide="key" class="w-3 h-3"></i>
+                <span id="sync-key-label">pengpeng</span>
               </button>
             </div>
             
-            <button id="btn-toggle-theme" onclick="toggleTheme(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-medium text-slate-200 hover:bg-white/10 flex items-center gap-3 transition">
+            <button id="btn-toggle-theme" onclick="toggleTheme(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors">
               <span id="theme-icon">☀️</span>
-              <span>外观切换</span>
+              <span>THEME</span>
             </button>
             
-            <button id="btn-toggle-minimal" onclick="toggleMinimalMode(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-medium text-slate-200 hover:bg-white/10 flex items-center gap-3 transition border-t border-white/5">
+            <button id="btn-toggle-minimal" onclick="toggleMinimalMode(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors border-t border-white">
               <span class="text-brand-amber">⚡</span>
-              <span id="minimal-mode-text">极简模式</span>
+              <span id="minimal-mode-text">MINIMAL</span>
             </button>
             
-            <button onclick="openPosterModal(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-medium text-slate-200 hover:bg-white/10 flex items-center gap-3 transition border-t border-white/5">
-              <i data-lucide="share-2" class="w-3.5 h-3.5 text-white"></i>
-              <span>导出海报</span>
+            <button onclick="openPosterModal(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors border-t border-white">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              <span>EXPORT</span>
             </button>
             
-            <button onclick="copySummaryToClipboard(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-medium text-slate-200 hover:bg-white/10 flex items-center gap-3 transition border-t border-white/5">
-              <i data-lucide="copy" class="w-3.5 h-3.5 text-white"></i>
-              <span>复制文本摘要</span>
+            <button onclick="copySummaryToClipboard(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors border-t border-white">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>COPY</span>
             </button>
             
-            <button onclick="resetCurrentProject(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-medium text-brand-red hover:bg-brand-red/10 flex items-center gap-3 transition border-t border-white/5">
+            <button onclick="resetCurrentProject(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-brand-red hover:bg-brand-red hover:text-black flex items-center gap-3 transition-colors border-t border-white">
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-              <span>重置当前清单</span>
+              <span>RESET</span>
             </button>
             
-            <button onclick="handleManualLock(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-medium text-brand-dim hover:bg-white/10 flex items-center gap-3 transition border-t border-white/5">
+            <button onclick="handleManualLock(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-brand-dim hover:bg-white hover:text-black flex items-center gap-3 transition-colors border-t border-white">
               <span>🔒</span>
-              <span>锁定屏幕</span>
+              <span>LOCK</span>
             </button>
           </div>
         </div>
