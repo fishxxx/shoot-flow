@@ -311,6 +311,46 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
     }
 
+  
+    /* Light Mode Semantic Tag Badges */
+    html.theme-light .bg-cyan-950\/60,
+    html.theme-light .bg-cyan-950\/50 {
+      background-color: #E0F2FE !important;
+      color: #0369A1 !important;
+      border-color: #7DD3FC !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-amber-950\/50 {
+      background-color: #FEF3C7 !important;
+      color: #B45309 !important;
+      border-color: #FCD34D !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-purple-950\/50 {
+      background-color: #F3E8FF !important;
+      color: #7E22CE !important;
+      border-color: #D8B4FE !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-emerald-950\/50 {
+      background-color: #DCFCE7 !important;
+      color: #047857 !important;
+      border-color: #86EFAC !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-red-950\/50 {
+      background-color: #FEE2E2 !important;
+      color: #B91C1C !important;
+      border-color: #FCA5A5 !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-slate-800 {
+      background-color: #F1F5F9 !important;
+      color: #0F172A !important;
+      border-color: #CBD5E1 !important;
+      font-weight: 700 !important;
+    }
+
   </style>
 </head>
 <body class="bg-brand-bg text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-emerald selection:text-black pb-24">
@@ -950,6 +990,18 @@
     }
 
     // ==========================================
+    
+    // Tag Badge Semantic Color Generator
+    function getTagBadgeClass(tag) {
+      if (!tag || tag === '自定义') return 'bg-slate-800 text-slate-200 border-slate-600';
+      if (/电力|电池|充电|电源/i.test(tag)) return 'bg-amber-950/50 text-amber-300 border-amber-500/40';
+      if (/器材|相机|镜头|机身|灯光|附件/i.test(tag)) return 'bg-cyan-950/50 text-cyan-300 border-cyan-500/40';
+      if (/报销|财务|发票|打车|餐费|小票/i.test(tag)) return 'bg-purple-950/50 text-purple-300 border-purple-500/40';
+      if (/数据|DIT|备份|存储|双备份/i.test(tag)) return 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40';
+      if (/急|高危|红线|安全|遗漏/i.test(tag)) return 'bg-red-950/50 text-red-300 border-red-500/40';
+      return 'bg-slate-800 text-cyan-300 border-slate-600';
+    }
+
     // 4. RENDERING & UI UPDATES
     // ==========================================
     
@@ -1077,8 +1129,12 @@
             <div class="flex items-center justify-between pb-3 border-b border-brand-border/60">
               <div class="min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
-                  <span class="text-xs text-brand-dim font-mono">${currentPhase.code}</span>
-                  <span class="text-xs px-2 py-0.5 rounded font-mono ${isComplete ? 'bg-emerald-500/20 text-brand-emerald border border-emerald-500/30' : 'bg-brand-border text-slate-400'}">${currentPhase.badge}</span>
+                  <span class="text-xs font-bold font-mono text-cyan-400 tracking-wider">${currentPhase.code}</span>
+                  <span class="text-xs px-2.5 py-0.5 rounded-md font-semibold tracking-wide border ${
+                    isComplete 
+                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]' 
+                      : 'bg-cyan-950/60 text-cyan-300 border-cyan-500/40 shadow-[0_0_6px_rgba(6,182,212,0.15)]'
+                  }">${currentPhase.badge}</span>
                 </div>
                 <h3 class="text-base sm:text-lg font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2">
                   ${currentPhase.title}
@@ -1107,7 +1163,7 @@
                     </button>
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center space-x-2">
-                        ${item.tag && item.tag !== '自定义' ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-bg border border-brand-border text-slate-400 font-mono shrink-0">${item.tag}</span>` : ''}
+                        ${item.tag && item.tag !== '自定义' ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-semibold font-mono border shrink-0 ${getTagBadgeClass(item.tag)}">${item.tag}</span>` : ''}
                         <span class="text-sm sm:text-base font-medium leading-snug ${
                           item.checked 
                             ? 'text-slate-500 line-through' 
@@ -1205,18 +1261,18 @@
                   ? 'bg-emerald-500/20 text-brand-emerald border-emerald-500/40 glow-emerald'
                   : phaseChecked > 0
                     ? 'bg-amber-500/10 text-brand-amber border-amber-500/30'
-                    : 'bg-brand-bg text-slate-400 border-brand-border'
+                    : 'bg-slate-800/80 text-cyan-400 border-slate-700/80 shadow-inner'
               }">
                 <i data-lucide="${isComplete ? 'check' : phase.icon || 'circle'}" class="w-4 h-4"></i>
               </div>
 
               <div class="flex-1 min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
-                  <span class="font-mono text-xs text-brand-dim">${phase.code}</span>
-                  <span class="text-xs px-2 py-0.5 rounded font-mono ${
+                  <span class="font-mono text-xs font-bold text-cyan-400 tracking-wider">${phase.code}</span>
+                  <span class="text-xs px-2.5 py-0.5 rounded-md font-semibold tracking-wide border transition-all ${
                     isComplete 
-                      ? 'bg-emerald-500/20 text-brand-emerald border border-emerald-500/30' 
-                      : 'bg-brand-border text-slate-400'
+                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]' 
+                      : 'bg-cyan-950/60 text-cyan-300 border-cyan-500/40 shadow-[0_0_6px_rgba(6,182,212,0.15)]'
                   }">${phase.badge}</span>
                 </div>
                 <h3 class="text-sm sm:text-base font-bold text-slate-100 truncate mt-0.5 flex items-center gap-2">
@@ -1263,7 +1319,7 @@
 
                   <div class="flex-1 min-w-0 cursor-pointer select-none" onclick="toggleItem(${phaseIndex}, ${itemIndex})">
                     <div class="flex items-center space-x-2">
-                      <span class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded bg-brand-bg border border-brand-border text-slate-400 font-mono shrink-0">
+                      <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-semibold font-mono border shrink-0 ${getTagBadgeClass(item.tag)}">
                         ${item.tag || '检查'}
                       </span>
                       <span class="text-xs sm:text-sm font-medium ${(item.isCritical && !item.checked) ? 'text-red-400 font-bold' : 'text-slate-200'} item-text leading-snug ${item.checked ? 'checked-text' : ''}">
