@@ -12,8 +12,13 @@
   <link rel="apple-touch-icon" href="icon.svg">
   <title>SHOOT FLOW // 拍摄全流程防忘清单</title>
 
-  <!-- Tailwind CSS CDN (Synchronous to prevent FOUC and styling issues) -->
-  <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
+  <!-- Core UI Engine: Local First with CDN Fallback -->
+  <script src="lib_tailwind.js"></script>
+  <script>
+    if (typeof tailwind === 'undefined') {
+      document.write('<script src="https://cdn.tailwindcss.com"><\/script>');
+    }
+  </script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -43,32 +48,30 @@
     };
   </script>
 
-  <!-- Async Loader for other CDNs -->
+  <!-- Vendor Plugins: Local First with Fallbacks -->
+  <script src="lib_lucide.js"></script>
   <script>
-    function loadScript(src, onLoad) {
-      const script = document.createElement('script');
-      script.src = src;
-      script.crossOrigin = "anonymous";
-      script.async = true;
-      if (onLoad) script.onload = onLoad;
-      document.head.appendChild(script);
+    if (typeof lucide === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"><\/script>');
     }
+  </script>
+  <script src="lib_confetti.js"></script>
+  <script src="lib_html2canvas.js"></script>
+  <script src="lib_supabase.js"></script>
+  <script>
+    if (typeof supabase === 'undefined' && typeof window.supabase === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+    }
+  </script>
 
-    loadScript("https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js", () => {
-      try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
-    });
-    loadScript("https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js");
-    loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js");
-    loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2", () => {
-      try { pullFromCloud(); } catch(e){}
-    });
-
-    window.addEventListener('error', function(e) {
-        if (e.message === 'Script error.') return;
-        console.warn("Global JS Error:", e.message, e.filename, e.lineno);
-    });
-    window.addEventListener('unhandledrejection', function(e) {
-        console.warn("Unhandled Promise Rejection:", e.reason);
+  <script>
+    // Click-outside handler for overflow menu
+    document.addEventListener('click', function(e) {
+      const wrapper = document.getElementById('overflow-menu-wrapper');
+      const dropdown = document.getElementById('overflow-dropdown');
+      if (wrapper && dropdown && !wrapper.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
     });
   </script>
 
@@ -625,7 +628,7 @@
         <div class="min-w-0 hidden sm:block">
           <div class="flex items-center space-x-1.5">
             <h1 class="text-sm sm:text-lg font-bold tracking-wider text-slate-100 flex items-center gap-1.5 truncate">
-              SHOOT FLOW <span class="text-[10px] sm:text-xs px-1 py-0.5 rounded bg-emerald-500/20 text-brand-emerald border border-emerald-500/30 font-mono font-normal">v1.07</span>
+              SHOOT FLOW
             </h1>
           </div>
           <p class="text-[10px] sm:text-xs text-slate-400 truncate">影视防忘清单 • ADHD友好</p>
@@ -634,10 +637,6 @@
 
       <!-- Actions -->
       <div class="flex items-center space-x-1.5 shrink-0">
-        
-        <button onclick="handleManualLock()" class="p-2 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-slate-400 hover:text-slate-200 transition active:scale-95" title="锁定页面">
-          <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-        </button>
         <button onclick="openSyncKeyModal()" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-xs text-slate-200 transition active:scale-95" title="设置云端同步密钥">
           <i data-lucide="key-round" class="w-3.5 h-3.5 text-brand-amber"></i>
           <span id="sync-key-label" class="max-w-[70px] truncate hidden sm:inline">pengpeng</span>
@@ -650,13 +649,26 @@
         </button>
 
         
-        <button id="btn-toggle-theme" onclick="toggleTheme()" class="px-2 py-1.5 rounded-lg border text-xs font-semibold flex items-center space-x-1 transition active:scale-95 bg-brand-card hover:bg-brand-cardHover border-brand-border text-slate-200" title="切换烈日强光/暗夜模式">
-          <span id="theme-icon">☀️</span>
-        </button>
-        <button id="btn-toggle-minimal" onclick="toggleMinimalMode()" class="px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center space-x-1 transition active:scale-95 bg-brand-card hover:bg-brand-cardHover border-brand-border text-slate-200" title="切换极简/详细视图">
-          <span class="text-brand-amber">⚡</span>
-          <span id="minimal-mode-text" class="hidden xs:inline">极简</span>
-        </button>
+        <!-- Overflow Menu (···) for secondary actions -->
+        <div class="relative" id="overflow-menu-wrapper">
+          <button onclick="document.getElementById('overflow-dropdown').classList.toggle('hidden')" class="p-2 rounded-lg bg-brand-card hover:bg-brand-cardHover border border-brand-border text-slate-400 hover:text-slate-200 transition active:scale-95" title="更多选项">
+            <i data-lucide="ellipsis" class="w-3.5 h-3.5"></i>
+          </button>
+          <div id="overflow-dropdown" class="hidden absolute right-0 top-full mt-1.5 w-44 bg-brand-card border border-brand-border rounded-xl shadow-2xl shadow-black/40 overflow-hidden z-50 animate-in fade-in slide-in-from-top-1">
+            <button id="btn-toggle-theme" onclick="toggleTheme(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-200 hover:bg-brand-cardHover flex items-center space-x-2.5 transition">
+              <span id="theme-icon">☀️</span>
+              <span>切换日照 / 暗夜</span>
+            </button>
+            <button id="btn-toggle-minimal" onclick="toggleMinimalMode(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-200 hover:bg-brand-cardHover flex items-center space-x-2.5 transition border-t border-brand-border/50">
+              <span class="text-brand-amber">⚡</span>
+              <span id="minimal-mode-text">极简 / 详细模式</span>
+            </button>
+            <button onclick="handleManualLock(); document.getElementById('overflow-dropdown').classList.add('hidden');" class="w-full px-3.5 py-2.5 text-left text-xs text-slate-400 hover:bg-brand-cardHover hover:text-red-400 flex items-center space-x-2.5 transition border-t border-brand-border/50">
+              <span>🔒</span>
+              <span>锁定页面</span>
+            </button>
+          </div>
+        </div>
 
         <button onclick="openNewProjectModal()" class="p-1.5 rounded-lg bg-brand-emerald hover:bg-emerald-400 text-black font-semibold text-xs transition flex items-center space-x-1 sm:px-2.5 active:scale-95">
           <i data-lucide="plus" class="w-4 h-4"></i>
@@ -733,18 +745,18 @@
       </div>
 
       <!-- Quick Action Buttons -->
-      <div class="flex items-center space-x-2 shrink-0 pt-1 sm:pt-0">
-        <button onclick="copySummaryToClipboard()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-200 flex items-center space-x-1.5 transition active:scale-95">
+      <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0 pt-1 sm:pt-0">
+        <button onclick="copySummaryToClipboard()" class="justify-center px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-200 flex items-center space-x-1.5 transition active:scale-95" title="复制文本摘要">
           <i data-lucide="copy" class="w-3.5 h-3.5 text-brand-amber"></i>
-          <span>复制文本</span>
+          <span class="hidden sm:inline">复制文本</span>
         </button>
-        <button onclick="openPosterModal()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs text-brand-emerald border border-emerald-500/30 font-semibold flex items-center space-x-1.5 transition active:scale-95">
+        <button onclick="openPosterModal()" class="justify-center px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs text-brand-emerald border border-emerald-500/30 font-semibold flex items-center space-x-1.5 transition active:scale-95" title="导出海报">
           <i data-lucide="share-2" class="w-3.5 h-3.5 text-brand-emerald"></i>
-          <span>导出</span>
+          <span class="hidden sm:inline">导出</span>
         </button>
-        <button onclick="resetCurrentProject()" class="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 rounded-lg bg-brand-border/60 hover:bg-brand-border text-xs text-slate-300 hover:text-red-400 flex items-center space-x-1.5 transition active:scale-95">
+        <button onclick="resetCurrentProject()" class="justify-center px-2 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs text-slate-500 hover:text-red-400 hover:bg-red-500/10 flex items-center space-x-1.5 transition active:scale-95" title="重置清单">
           <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-          <span>重置</span>
+          <span class="hidden sm:inline">重置</span>
         </button>
       </div>
     </div>
@@ -767,6 +779,7 @@
           2. 永远不要相信自己的“待会一定记得”，看到就立刻打勾或装包。<br>
           3. 拍完当晚无论多累，至少把<b>发票截图存好</b>并<b>把机位卡备份第一遍</b>，次日你会感谢自己。
         </p>
+        <p class="mt-2 pt-2 border-t border-slate-800/50 text-[10px] text-slate-500/60 font-mono tracking-wide">SHOOT FLOW v1.07 · 十光影视 · Local-First PWA</p>
       </div>
     </div>
 
@@ -2407,12 +2420,23 @@
     // Tag Badge Semantic Color Generator
     function getTagBadgeClass(tag) {
       if (!tag || tag === '自定义') return 'bg-slate-800 text-slate-200 border-slate-600';
-      if (/电力|电池|充电|电源/i.test(tag)) return 'bg-amber-950/50 text-amber-300 border-amber-500/40';
-      if (/器材|相机|镜头|机身|灯光|附件/i.test(tag)) return 'bg-cyan-950/50 text-cyan-300 border-cyan-500/40';
-      if (/报销|财务|发票|打车|餐费|小票/i.test(tag)) return 'bg-purple-950/50 text-purple-300 border-purple-500/40';
-      if (/数据|DIT|备份|存储|双备份/i.test(tag)) return 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40';
-      if (/急|高危|红线|安全|遗漏/i.test(tag)) return 'bg-red-950/50 text-red-300 border-red-500/40';
-      return 'bg-slate-800 text-cyan-300 border-slate-600';
+      // 🔌 电力能源 — amber
+      if (/电力|电池|充电|电源|散热|应急电/i.test(tag)) return 'bg-amber-950/50 text-amber-300 border-amber-500/40';
+      // 📷 器材设备 — cyan
+      if (/器材|相机|镜头|机身|灯光|附件|导播|线材/i.test(tag)) return 'bg-cyan-950/50 text-cyan-300 border-cyan-500/40';
+      // 💰 财务报销 — purple
+      if (/报销|财务|发票|打车|餐费|小票|结算|应付|记账|租赁报销|差旅|货运|餐饮/i.test(tag)) return 'bg-purple-950/50 text-purple-300 border-purple-500/40';
+      // 💾 数据安全 — emerald
+      if (/数据|DIT|备份|存储|双备份|元数据|安全|工程/i.test(tag)) return 'bg-emerald-950/50 text-emerald-300 border-emerald-500/40';
+      // 🚨 高危红线 — red
+      if (/心法|高危|红线|遗漏|认知/i.test(tag)) return 'bg-red-950/50 text-red-300 border-red-500/40';
+      // 🎯 需求策划 — blue
+      if (/需求|方案|脚本|分镜|商务|租赁(?!报销)/i.test(tag)) return 'bg-blue-950/50 text-blue-300 border-blue-500/40';
+      // 👥 人员协调 — indigo
+      if (/人员|排期|场地|证件|物流|容灾|随身|箱/i.test(tag)) return 'bg-indigo-950/50 text-indigo-300 border-indigo-500/40';
+      // 🎵 音视频技术 — teal
+      if (/音频|布光|色彩|画面|推流|网络|同步|参数|场记|视听|接口/i.test(tag)) return 'bg-teal-950/50 text-teal-300 border-teal-500/40';
+      return 'bg-slate-800 text-slate-300 border-slate-600';
     }
 
     // 4. RENDERING & UI UPDATES
