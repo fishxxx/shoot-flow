@@ -65,10 +65,10 @@
 
     window.addEventListener('error', function(e) {
         if (e.message === 'Script error.') return;
-        alert("Global JS Error: " + e.message + " at " + (e.filename || 'unknown') + ":" + (e.lineno || 0));
+        console.warn("Global JS Error:", e.message, e.filename, e.lineno);
     });
     window.addEventListener('unhandledrejection', function(e) {
-        alert("Unhandled Promise Rejection: " + e.reason);
+        console.warn("Unhandled Promise Rejection:", e.reason);
     });
   </script>
 
@@ -2088,11 +2088,28 @@
       return list;
     }
 
+    function isLocalEnvironment() {
+      try {
+        const host = window.location.hostname;
+        const protocol = window.location.protocol;
+        if (protocol === 'file:') return true;
+        if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host.endsWith('.local') || host.startsWith('192.168.')) return true;
+      } catch (e) {}
+      return false;
+    }
+
     function checkAuthStatus() {
       const overlay = document.getElementById('auth-lock-overlay');
       if (!overlay) return;
 
-      const isVerified = localStorage.getItem(STORAGE_KEY_AUTH_TOKEN) === 'true';
+      // 本地环境 (localhost / 127.0.0.1 / file://) 默认免密直通，不设任何阻拦
+      if (isLocalEnvironment()) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        return;
+      }
+
+      const isVerified = localStorage.getItem(STORAGE_KEY_AUTH_TOKEN) === 'true' || sessionStorage.getItem(STORAGE_KEY_AUTH_TOKEN) === 'true';
       if (isVerified) {
         overlay.classList.add('hidden');
         overlay.classList.remove('flex');
@@ -2102,7 +2119,9 @@
         const passInput = document.getElementById('input-auth-passcode');
         if (passInput) {
           passInput.value = '';
-          setTimeout(() => passInput.focus(), 100);
+          setTimeout(() => {
+            try { passInput.focus(); } catch(e){}
+          }, 100);
         }
       }
     }
