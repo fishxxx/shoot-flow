@@ -571,9 +571,15 @@
     <div id="adhd-tips-container" class="mt-8 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-start space-x-3">
       <i data-lucide="sparkles" class="w-4 h-4 text-brand-amber shrink-0 mt-0.5"></i>
       <div class="space-y-1">
-        <div class="font-semibold text-slate-200">ADHD 拍摄减负心法</div>
-        <p>1. 永远不要相信自己的“待会一定记得”，看到就立刻打勾或装包。<br>
-           2. 拍完当晚无论多累，至少把<b>发票截图存好</b>并<b>把机位卡备份第一遍</b>，次日你会感谢自己。</p>
+        <div class="font-semibold text-slate-200 flex items-center gap-1.5">
+          <span>ADHD 拍摄减负心法</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">GOLDEN RULES</span>
+        </div>
+        <p class="leading-relaxed">
+          1. 🎬 <b>摄影现场心法</b>：无论多赶，也优先抓好【机位、构图、灯光】三要素，沉下心来，切忌慌乱。<br>
+          2. 永远不要相信自己的“待会一定记得”，看到就立刻打勾或装包。<br>
+          3. 拍完当晚无论多累，至少把<b>发票截图存好</b>并<b>把机位卡备份第一遍</b>，次日你会感谢自己。
+        </p>
       </div>
     </div>
 
@@ -1159,6 +1165,7 @@
         badge: '拍摄中',
         description: '现场多想一步：光比平衡、音频余量、镜头多样性。',
         items: [
+          { text: '⚠️ 【摄影核心心法】优先关注机位、构图和灯光，沉下心不要着急！', tag: '摄影心法', isCritical: true, note: '定好机位高度与焦段 ➔ 稳定构图比例 ➔ 调好主辅光比，切忌慌乱抢拍' },
           { text: '音频监听确认（耳机直插机身监听，留足 -12dB 余量防爆音）', tag: '音频' },
           { text: '环境光比与顶光控制（避免盲目拉满功率，注意眼神光与阴影软硬）', tag: '布光' },
           { text: '思维切换提醒：遇到特殊光影场景，思考是否需要补拍延时/慢门', tag: '视听' },
@@ -1971,6 +1978,27 @@
       if (!Array.isArray(projects)) {
         projects = [];
       }
+      
+        // Backfill camera reminder item to existing phase_onset if missing
+        projects.forEach(p => {
+          (p.phases || []).forEach(ph => {
+            if (isCameraOnsetPhase(ph)) {
+              const hasReminder = (ph.items || []).some(it => it.text.includes('摄影核心心法') || it.text.includes('不要着急'));
+              if (!hasReminder) {
+                ph.items.unshift({
+                  id: 'item_onset_reminder_' + Date.now(),
+                  text: '⚠️ 【摄影核心心法】优先关注机位、构图和灯光，沉下心不要着急！',
+                  tag: '摄影心法',
+                  isCritical: true,
+                  note: '定好机位高度与焦段 ➔ 稳定构图比例 ➔ 调好主辅光比，切忌慌乱抢拍',
+                  checked: false,
+                  isCustom: false
+                });
+              }
+            }
+          });
+        });
+
     }
 
     function saveLocalData() {
@@ -1993,6 +2021,32 @@
 
     // ==========================================
     
+    
+    function isCameraOnsetPhase(phase) {
+      if (!phase) return false;
+      return phase.id === 'phase_onset' || (phase.code && phase.code.includes('ON-SET')) || (phase.title && (phase.title.includes('现场执行') || phase.title.includes('摄影')));
+    }
+
+    function renderCameraReminderBanner() {
+      return `
+        <div class="mb-3.5 p-3.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-cyan-500/15 to-emerald-500/20 border-2 border-amber-500/50 text-amber-200 text-xs flex items-center justify-between shadow-lg shadow-amber-500/10 animate-pulse">
+          <div class="flex items-center space-x-3 min-w-0 pr-2">
+            <span class="text-2xl shrink-0">🎬</span>
+            <div class="space-y-0.5">
+              <div class="font-black text-amber-300 flex items-center gap-1.5 tracking-wide text-xs sm:text-sm">
+                <span>⚡ 摄影核心心法提醒</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-400 text-black font-mono font-black">TOP PRIORITY</span>
+              </div>
+              <p class="text-slate-100 font-semibold text-xs leading-relaxed">
+                优先关注 <span class="text-amber-300 font-bold underline decoration-amber-400">机位</span>、<span class="text-cyan-300 font-bold underline decoration-cyan-400">构图</span> 和 <span class="text-emerald-300 font-bold underline decoration-emerald-400">灯光</span>，沉住气，<b>千万不要着急！</b>
+              </p>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-lg bg-amber-500/30 border border-amber-400/50 text-amber-200 font-mono font-bold shrink-0 hidden sm:inline-block">FOCUS</span>
+        </div>
+      `;
+    }
+
     // Tag Badge Semantic Color Generator
     function getTagBadgeClass(tag) {
       if (!tag || tag === '自定义') return 'bg-slate-800 text-slate-200 border-slate-600';
@@ -2149,6 +2203,7 @@
               </div>
             </div>
 
+            ${isCameraOnsetPhase(currentPhase) ? renderCameraReminderBanner() : ''}
             <!-- Items List -->
             <div class="divide-y divide-brand-border/40">
               ${currentPhase.items.map((item, itemIndex) => `
@@ -2307,6 +2362,8 @@
           <div class="${isExpanded ? 'block' : 'hidden'} border-t border-brand-border/60 bg-brand-bg/40 p-4 sm:p-5 space-y-3">
             <p class="text-xs text-slate-400 italic mb-2">${phase.description}</p>
             
+            ${isCameraOnsetPhase(phase) ? renderCameraReminderBanner() : ''}
+
             <div class="space-y-2">
               ${phase.items.map((item, itemIndex) => `
                 <div class="group flex items-center space-x-3 p-3 sm:p-2.5 rounded-xl transition-all border active:bg-brand-cardHover ${
