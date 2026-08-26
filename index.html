@@ -124,68 +124,191 @@
       }
     }
   
-    /* High-Contrast Outdoor Sunlight Mode (☀️ 烈日强光模式) */
+    /* =========================================================
+       HIGH-CONTRAST OUTDOOR SUNLIGHT MODE (☀️ 烈日户外高对比度模式)
+       Swiss High-Contrast Editorial Palette for Direct Sunlight
+    ========================================================= */
     html.theme-light {
       color-scheme: light;
     }
     html.theme-light body {
-      background-color: #F1F5F9 !important;
+      background-color: #F8FAFC !important;
       color: #0F172A !important;
     }
     html.theme-light header {
-      background-color: rgba(241, 245, 249, 0.95) !important;
+      background-color: rgba(255, 255, 255, 0.95) !important;
       border-color: #CBD5E1 !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }
-    html.theme-light .bg-brand-bg {
-      background-color: #FFFFFF !important;
+    
+    /* Surface Containers & Cards */
+    html.theme-light .bg-brand-bg,
+    html.theme-light .bg-brand-bg\/90,
+    html.theme-light .bg-brand-bg\/95 {
+      background-color: #F8FAFC !important;
+    }
+    html.theme-light .bg-brand-bg\/40 {
+      background-color: #F1F5F9 !important;
     }
     html.theme-light .bg-brand-card {
       background-color: #FFFFFF !important;
       border-color: #CBD5E1 !important;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
     }
     html.theme-light .bg-brand-card\/90 {
-      background-color: rgba(255, 255, 255, 0.95) !important;
+      background-color: rgba(255, 255, 255, 0.98) !important;
+      border-color: #CBD5E1 !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important;
     }
     html.theme-light .bg-brand-card\/40 {
-      background-color: rgba(241, 245, 249, 0.6) !important;
+      background-color: #F8FAFC !important;
+      border-color: #E2E8F0 !important;
     }
-    html.theme-light .text-slate-100 {
-      color: #0F172A !important;
+    html.theme-light .bg-brand-card\/70 {
+      background-color: #F0FDF4 !important;
+      border-color: #86EFAC !important;
     }
-    html.theme-light .text-slate-200 {
-      color: #1E293B !important;
+    html.theme-light .bg-brand-cardHover,
+    html.theme-light .hover\:bg-brand-cardHover:hover {
+      background-color: #F1F5F9 !important;
     }
-    html.theme-light .text-slate-300 {
-      color: #334155 !important;
+    html.theme-light .active\:bg-brand-cardHover:active {
+      background-color: #E2E8F0 !important;
     }
-    html.theme-light .text-slate-400 {
-      color: #475569 !important;
-    }
-    html.theme-light .text-slate-500 {
-      color: #64748B !important;
-    }
+
+    /* Borders & Dividers */
     html.theme-light .border-brand-border {
       border-color: #CBD5E1 !important;
     }
-    html.theme-light .border-brand-border\/60 {
-      border-color: #E2E8F0 !important;
-    }
+    html.theme-light .border-brand-border\/60,
     html.theme-light .border-brand-border\/40 {
       border-color: #E2E8F0 !important;
     }
-    html.theme-light .checked-text {
-      color: #94A3B8 !important;
-    }
-    html.theme-light #progress-bar {
-      background: linear-gradient(to right, #059669, #0D9488, #0891B2) !important;
-    }
-    html.theme-light .bg-slate-900\/60 {
+    html.theme-light .bg-brand-border,
+    html.theme-light .bg-brand-border\/60,
+    html.theme-light .bg-brand-border\/70,
+    html.theme-light .bg-brand-border\/80 {
       background-color: #E2E8F0 !important;
       border-color: #CBD5E1 !important;
     }
-    html.theme-light .bg-emerald-950\/20, html.theme-light .bg-emerald-950\/40 {
+
+    /* High-Legibility Typography in Sunlight */
+    html.theme-light h1,
+    html.theme-light h2,
+    html.theme-light h3,
+    html.theme-light .text-slate-100 {
+      color: #0F172A !important; /* Deepest black */
+    }
+    html.theme-light .text-slate-200 {
+      color: #0F172A !important;
+      font-weight: 600 !important;
+    }
+    html.theme-light .text-slate-300 {
+      color: #1E293B !important; /* Dark Charcoal */
+      font-weight: 500 !important;
+    }
+    html.theme-light .text-slate-400 {
+      color: #334155 !important; /* High contrast steel gray */
+      font-weight: 500 !important;
+    }
+    html.theme-light .text-slate-500 {
+      color: #475569 !important;
+    }
+    html.theme-light .text-brand-dim {
+      color: #1E293B !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .item-text {
+      color: #0F172A !important;
+      font-weight: 500 !important;
+    }
+    html.theme-light .checked-text {
+      color: #94A3B8 !important;
+      text-decoration: line-through !important;
+    }
+
+    /* High-Contrast Accent Overrides */
+    html.theme-light .text-brand-emerald {
+      color: #047857 !important; /* Rich Dark Emerald */
+      font-weight: 700 !important;
+    }
+    html.theme-light .text-brand-cyan {
+      color: #0284C7 !important; /* Deep Ocean Cyan */
+      font-weight: 600 !important;
+    }
+    html.theme-light .text-brand-amber {
+      color: #B45309 !important; /* Dark Warm Amber */
+      font-weight: 700 !important;
+    }
+    html.theme-light .text-red-400,
+    html.theme-light .text-red-500 {
+      color: #B91C1C !important; /* Dark Crimson */
+      font-weight: 700 !important;
+    }
+
+    /* Badges & Pills High Contrast */
+    html.theme-light .bg-emerald-500\/20,
+    html.theme-light .bg-emerald-500\/10 {
       background-color: #DCFCE7 !important;
+      color: #065F46 !important;
+      border-color: #86EFAC !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-emerald-950\/20,
+    html.theme-light .bg-emerald-950\/40 {
+      background-color: #DCFCE7 !important;
+      border-color: #86EFAC !important;
+    }
+    html.theme-light .bg-amber-500\/20,
+    html.theme-light .bg-amber-500\/10 {
+      background-color: #FEF3C7 !important;
+      color: #92400E !important;
+      border-color: #FCD34D !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-cyan-500\/20,
+    html.theme-light .bg-cyan-500\/10 {
+      background-color: #E0F2FE !important;
+      color: #075985 !important;
+      border-color: #BAE6FD !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light .bg-slate-900\/60 {
+      background-color: #F1F5F9 !important;
+      border-color: #CBD5E1 !important;
+    }
+
+    /* Checkboxes & Interactive Controls */
+    html.theme-light button {
+      color: #0F172A;
+    }
+    html.theme-light button.bg-brand-emerald {
+      background-color: #10B981 !important;
+      color: #000000 !important;
+      font-weight: 700 !important;
+    }
+    html.theme-light button:not(.bg-brand-emerald) {
+      border-color: #CBD5E1 !important;
+    }
+    html.theme-light input,
+    html.theme-light select,
+    html.theme-light textarea {
+      background-color: #FFFFFF !important;
+      color: #0F172A !important;
+      border-color: #94A3B8 !important;
+    }
+    html.theme-light input::placeholder,
+    html.theme-light textarea::placeholder {
+      color: #64748B !important;
+    }
+    html.theme-light #progress-bar {
+      background: linear-gradient(to right, #059669, #0D9488, #0284C7) !important;
+    }
+    html.theme-light #toast {
+      background-color: #FFFFFF !important;
+      color: #0F172A !important;
+      border-color: #CBD5E1 !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
     }
 
   </style>
