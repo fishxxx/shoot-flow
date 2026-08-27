@@ -198,38 +198,61 @@
 
   
     /* =========================================================
-       LEDGER & GEAR MODULE DEDICATED THEME COLORS
+       LEDGER & GEAR MODULE BRUTALIST THEME
     ========================================================= */
     .ledger-card {
-      background-color: #131926;
-      border: 1px solid #232D42;
-      border-radius: 0.875rem;
+      background-color: #000000;
+      border: 1px solid #ffffff;
+      border-radius: 0;
+      box-shadow: 6px 6px 0 0 rgba(255, 255, 255, 1);
       transition: all 0.2s ease;
     }
+    html.theme-light .ledger-card {
+      background-color: #ffffff !important;
+      border-color: #000000 !important;
+      box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 1) !important;
+    }
     .ledger-inner-box {
-      background-color: #0B0F17;
-      border: 1px solid #1E293B;
-      border-radius: 0.625rem;
+      background-color: #000000;
+      border: 1px solid #ffffff;
+      border-radius: 0;
+    }
+    html.theme-light .ledger-inner-box {
+      background-color: #ffffff !important;
+      border-color: #000000 !important;
     }
     .ledger-item-row {
-      border-bottom: 1px solid rgba(30, 41, 59, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .ledger-item-row:last-child {
-      border-bottom: none;
+    html.theme-light .ledger-item-row {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
     }
     .ledger-item-name {
-      color: #F1F5F9;
-      font-weight: 500;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    html.theme-light .ledger-item-name {
+      color: #000000 !important;
     }
     .ledger-item-spec {
-      color: #94A3B8;
-      font-family: 'JetBrains Mono', Menlo, monospace;
+      color: #B3B3B3;
+      font-family: 'Space Mono', 'JetBrains Mono', Menlo, monospace;
+    }
+    html.theme-light .ledger-item-spec {
+      color: #555555 !important;
     }
     .ledger-exempt-badge {
-      background-color: rgba(245, 158, 11, 0.15);
-      color: #FCD34D;
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      background-color: #000000;
+      color: #D71E1E;
+      border: 1px solid #D71E1E;
+      border-radius: 0;
       font-weight: 700;
+      font-family: 'Space Mono', monospace;
+    }
+    html.theme-light .ledger-exempt-badge {
+      background-color: #ffffff !important;
+      color: #D71E1E !important;
+      border-color: #D71E1E !important;
     }
 
     /* High-Contrast Light Mode Overrides for Ledger */
@@ -1365,15 +1388,15 @@
             const itemsHtml = (r.items || []).map(it => {
               const isExempt = it.status === 'exempt' || (it.price && it.price.includes('免除'));
               return `
-                <div class="ledger-item-row flex items-center justify-between text-xs py-1.5">
+                <div class="ledger-item-row flex items-center justify-between text-xs py-2">
                   <div class="flex items-center space-x-2.5 min-w-0">
-                    <span class="w-2 h-2 rounded-full ${isExempt ? 'bg-amber-400 ring-2 ring-amber-400/20' : 'bg-emerald-400 ring-emerald-400/20'} shrink-0"></span>
-                    <span class="ledger-item-name truncate">${it.name}</span>
-                    <span class="ledger-item-spec text-[11px]">${it.spec || ''}</span>
+                    <span class="w-2 h-2 rounded-full ${isExempt ? 'bg-brand-red' : 'bg-emerald-400'} shrink-0"></span>
+                    <span class="ledger-item-name text-xs sm:text-sm truncate">${it.name}</span>
+                    <span class="ledger-item-spec text-[11px] font-mono font-medium">${it.spec || ''}</span>
                   </div>
                   <div class="flex items-center space-x-2 shrink-0">
-                    ${isExempt ? `<span class="ledger-exempt-badge px-2 py-0.5 rounded text-[10px]">🚫 故障免除 (￥0)</span>` : ''}
-                    ${it.price && !isExempt ? `<span class="text-[11px] font-mono text-brand-dim font-medium">${it.price}</span>` : ''}
+                    ${isExempt ? `<span class="ledger-exempt-badge px-2 py-0.5 text-[10px]">🚫 故障免除 (￥0)</span>` : ''}
+                    ${it.price && !isExempt ? `<span class="text-[11px] font-mono text-brand-dim uppercase font-bold tracking-wider">${it.price}</span>` : ''}
                   </div>
                 </div>
               `;
@@ -1382,18 +1405,18 @@
             return `
               <div class="ledger-card p-4 sm:p-5 space-y-3">
                 <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1 min-w-0">
-                    <div class="flex items-center space-x-2">
-                      <span class="px-2 py-0.5 rounded bg-white text-black font-mono text-xs font-bold shrink-0">${r.date}</span>
-                      <h4 class="text-sm sm:text-base font-bold text-white truncate">${r.projectName || '常规外拍'}</h4>
-                      ${r.location ? `<span class="px-1.5 py-0.5 rounded bg-black text-brand-dim text-[10px]">${r.location}</span>` : ''}
+                  <div class="space-y-1.5 min-w-0">
+                    <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                      <span class="px-2 py-0.5 border border-white bg-black text-white font-mono text-xs font-bold shrink-0">${r.date}</span>
+                      <h4 class="text-sm sm:text-base font-bold font-serif text-white truncate">${r.projectName || '常规外拍'}</h4>
+                      ${r.location ? `<span class="px-1.5 py-0.5 border border-brand-dim bg-black text-brand-dim text-[10px] font-mono">${r.location}</span>` : ''}
                     </div>
-                    ${r.notes ? `<p class="text-xs text-brand-amber flex items-center gap-1 font-medium"><i data-lucide="info" class="w-3.5 h-3.5 shrink-0"></i> ${r.notes}</p>` : ''}
+                    ${r.notes ? `<p class="text-xs text-white border-l-2 border-brand-emerald pl-2 mt-1 flex items-center gap-1.5 font-mono"><i data-lucide="info" class="w-3.5 h-3.5 text-brand-emerald shrink-0"></i> <span>${r.notes}</span></p>` : ''}
                   </div>
 
                   <div class="flex items-center space-x-1.5 shrink-0">
-                    <button onclick="openEditRentalModal('${r.id}')" class="px-2.5 py-1.5 rounded-none bg-black border border-white hover:bg-white hover:text-black text-xs text-white font-medium transition flex items-center space-x-1 active:scale-95">
-                      <i data-lucide="edit-3" class="w-3.5 h-3.5 text-brand-cyan"></i>
+                    <button onclick="openEditRentalModal('${r.id}')" class="px-2.5 py-1.5 rounded-none bg-black border border-white hover:bg-white hover:text-black text-xs text-white font-medium transition flex items-center space-x-1 active:scale-95 shadow-[2px_2px_0_0_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5">
+                      <i data-lucide="edit-3" class="w-3.5 h-3.5 text-brand-emerald"></i>
                       <span>编辑/补录</span>
                     </button>
                   </div>
