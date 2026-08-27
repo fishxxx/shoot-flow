@@ -312,6 +312,44 @@
     }
 
 
+    
+    /* =========================================================
+       RESPONSIVE MOBILE VIEWPORT & FONT SCALE ENGINE
+    ========================================================= */
+    /* Mobile Base Scale Optimization */
+    @media (max-width: 640px) {
+      html {
+        font-size: 16.5px;
+      }
+      button, input, textarea, a {
+        touch-action: manipulation;
+      }
+      /* Ensure subtext on mobile is comfortable to read */
+      .item-text {
+        font-size: 0.95rem !important;
+        line-height: 1.4 !important;
+      }
+    }
+
+    /* 3-Tier Font Scale Engine */
+    html[data-font-scale="large"] {
+      font-size: 18px;
+    }
+    @media (max-width: 640px) {
+      html[data-font-scale="large"] {
+        font-size: 19px;
+      }
+    }
+
+    html[data-font-scale="xlarge"] {
+      font-size: 20.5px;
+    }
+    @media (max-width: 640px) {
+      html[data-font-scale="xlarge"] {
+        font-size: 22px;
+      }
+    }
+
     /* Fix for native date input text color in light mode */
     html.theme-light input[type="date"] {
       color: #000000 !important;
@@ -2540,6 +2578,7 @@
       loadSopData();
       try {
       initTheme();
+      initFontScale();
       
       const passInput = document.getElementById('input-auth-passcode');
       if (passInput) {
@@ -3276,6 +3315,48 @@
     }
 
     let currentTheme = localStorage.getItem('shootflow_theme') || 'dark';
+    
+    // ==========================================
+    // FONT & VIEWPORT SCALE CONTROLLER
+    // ==========================================
+    const STORAGE_KEY_FONT_SCALE = 'shootflow_font_scale_v2';
+    const FONT_SCALES = [
+      { key: 'default', label: '100% 标准', icon: '100%' },
+      { key: 'large', label: '115% 舒适大字', icon: '115%' },
+      { key: 'xlarge', label: '130% 片场特大', icon: '130%' }
+    ];
+    let currentFontScale = 'default';
+
+    function initFontScale() {
+      const saved = localStorage.getItem(STORAGE_KEY_FONT_SCALE) || 'default';
+      setFontScale(saved, false);
+    }
+
+    function setFontScale(scaleKey, showNotification = true) {
+      currentFontScale = scaleKey;
+      if (scaleKey === 'default') {
+        document.documentElement.removeAttribute('data-font-scale');
+      } else {
+        document.documentElement.setAttribute('data-font-scale', scaleKey);
+      }
+      localStorage.setItem(STORAGE_KEY_FONT_SCALE, scaleKey);
+
+      const target = FONT_SCALES.find(s => s.key === scaleKey) || FONT_SCALES[0];
+      const labelEl = document.getElementById('label-font-scale-mode');
+      if (labelEl) labelEl.textContent = target.icon;
+
+      if (showNotification) {
+        triggerHaptic('light');
+        showToast(`🔠 视图字号已切换为：${target.label}`);
+      }
+    }
+
+    function cycleFontScale() {
+      const currentIdx = FONT_SCALES.findIndex(s => s.key === currentFontScale);
+      const nextIdx = (currentIdx + 1) % FONT_SCALES.length;
+      setFontScale(FONT_SCALES[nextIdx].key, true);
+    }
+
     function initTheme() {
       if (currentTheme === 'light') {
         document.documentElement.classList.add('theme-light');
@@ -3292,6 +3373,7 @@
       currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
       localStorage.setItem('shootflow_theme', currentTheme);
       initTheme();
+      initFontScale();
       triggerHaptic('medium');
       showToast(currentTheme === 'light' ? '☀️ 已切换为烈日户外高对比模式' : '🌙 已切换为暗夜模式');
     }
@@ -4109,6 +4191,13 @@
             <button id="btn-toggle-minimal" onclick="toggleMinimalMode(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors border-t border-white">
               <span class="text-brand-amber">⚡</span>
               <span id="minimal-mode-text">MINIMAL</span>
+            </button>
+            <button id="btn-toggle-font-scale" onclick="cycleFontScale(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center justify-between transition-colors border-t border-white">
+              <div class="flex items-center gap-3">
+                <i data-lucide="type" class="w-3.5 h-3.5"></i>
+                <span>SCALE</span>
+              </div>
+              <span id="label-font-scale-mode" class="text-[10px] text-brand-emerald font-bold border border-brand-emerald px-1.5 py-0.5">100%</span>
             </button>
             
             <button onclick="openPosterModal(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors border-t border-white">
