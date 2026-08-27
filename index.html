@@ -375,11 +375,14 @@
       </div>
 
       <!-- Segmented Control (Center) -->
-      <div class="flex border border-white mx-auto">
-        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="px-5 py-1 text-xs font-bold font-mono uppercase transition-all bg-brand-emerald text-white border-r border-white flex items-center gap-1.5">
+      <div class="flex border border-white mx-auto font-mono text-xs">
+        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="px-3 sm:px-5 py-1 font-bold uppercase transition-all bg-brand-emerald text-white border-r border-white flex items-center gap-1.5">
           <i data-lucide="check-square" class="w-3.5 h-3.5"></i> FLOW
         </button>
-        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="px-5 py-1 text-xs font-semibold font-mono uppercase transition-all bg-black text-brand-dim hover:text-white flex items-center gap-1.5">
+        <button id="tab-btn-sop" onclick="switchMainTab('sop')" class="px-3 sm:px-5 py-1 font-semibold uppercase transition-all bg-black text-brand-dim hover:text-white border-r border-white flex items-center gap-1.5">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i> SOP
+        </button>
+        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="px-3 sm:px-5 py-1 font-semibold uppercase transition-all bg-black text-brand-dim hover:text-white flex items-center gap-1.5">
           <i data-lucide="calculator" class="w-3.5 h-3.5"></i> LEDGER
         </button>
       </div>
@@ -521,6 +524,47 @@
       </div>
 
     </div><!-- END VIEW-LEDGER -->
+
+    <!-- VIEW 3: SOP & MEMO ARCHIVE (标准化作业与备忘库) -->
+    <div id="view-sop" class="space-y-4 hidden">
+      
+      <!-- SOP Header Bar: Search, Category Filter, and New SOP Button -->
+      <div class="bg-black border border-white rounded-none p-3.5 sm:p-4 space-y-3 shadow-[6px_6px_0_0_rgba(255,255,255,1)]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-none border border-white bg-black flex items-center justify-center text-brand-emerald shrink-0">
+              <i data-lucide="book-open" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-sm sm:text-base font-bold font-serif text-white uppercase tracking-wider">SOP & MEMO ARCHIVE</h3>
+              <p class="text-[10px] text-brand-dim font-mono uppercase">标准化作业流程 · 核心心法 · 一键转出工清单</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <div class="relative flex-1 sm:w-60">
+              <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-brand-dim"></i>
+              <input type="text" id="sop-search-input" oninput="handleSopSearch()" placeholder="搜索 SOP / 备忘 / 步骤..." class="w-full bg-black border border-white rounded-none pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-emerald font-mono">
+            </div>
+            <button onclick="openNewSopModal()" class="px-3 py-1.5 border border-brand-emerald bg-brand-emerald text-white text-xs font-mono font-bold transition flex items-center space-x-1 active:scale-95 shadow-[2px_2px_0_0_rgba(255,255,255,1)] hover:shadow-none shrink-0">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>新建 SOP</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div id="sop-category-pills" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pt-1 text-[11px] font-mono">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- SOP Cards Container -->
+      <div id="sop-cards-container" class="space-y-4">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
   </main>
 
   <!-- MODAL: PROJECT SWITCH / MANAGE -->
@@ -840,6 +884,77 @@
   </div>
 
   
+  
+  <!-- MODAL: NEW/EDIT SOP -->
+  <div id="modal-sop" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-black border border-white rounded-none max-w-xl w-full p-4 sm:p-6 shadow-[8px_8px_0_0_rgba(255,255,255,1)] space-y-4 my-8">
+      <div class="flex items-center justify-between border-b border-white pb-3">
+        <h3 id="modal-sop-title" class="font-bold text-white flex items-center gap-2 font-serif text-base sm:text-lg">
+          <i data-lucide="book-open" class="w-4 h-4 text-brand-emerald"></i> <span>新建标准 SOP 与备忘</span>
+        </h3>
+        <button onclick="closeSopModal()" class="text-brand-dim hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-sop" onsubmit="event.preventDefault(); handleSaveSop();" class="space-y-3.5 font-mono text-xs">
+        <input type="hidden" id="input-sop-id">
+
+        <div>
+          <label class="block text-brand-dim mb-1 font-bold">SOP 标题 (Title)</label>
+          <input type="text" id="input-sop-title" placeholder="例如：双机位采访与电影感布光 SOP" required class="w-full bg-black border border-white rounded-none px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-emerald font-sans">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-brand-dim mb-1 font-bold">分类领域 (Category)</label>
+            <input type="text" id="input-sop-category" list="sop-category-datalist" placeholder="例如：🎬 摄制视听" required class="w-full bg-black border border-white rounded-none px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-emerald">
+            <datalist id="sop-category-datalist">
+              <option value="🎬 摄制视听"></option>
+              <option value="💡 灯光与布光"></option>
+              <option value="💾 DIT与数据"></option>
+              <option value="📡 直播推流"></option>
+              <option value="💰 财务走账"></option>
+              <option value="⚡ 极限与特殊拍摄"></option>
+            </datalist>
+          </div>
+          <div>
+            <label class="block text-brand-dim mb-1 font-bold">更新日期 (Date)</label>
+            <input type="date" id="input-sop-date" class="w-full bg-black border border-white rounded-none px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-emerald">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-brand-dim mb-1 font-bold flex items-center justify-between">
+            <span>核心心法 / 避坑备忘 (Memos & Mantras)</span>
+            <span class="text-[10px] text-brand-dim font-normal">支持多行要点</span>
+          </label>
+          <textarea id="input-sop-memo" rows="3" placeholder="记录核心心法、关键原则或常见踩坑教训（每行一条）..." class="w-full bg-black border border-white rounded-none px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-emerald leading-relaxed font-sans"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-brand-dim mb-1 font-bold flex items-center justify-between">
+            <span>执行步骤 / Checklist 事项 (Steps & Tasks)</span>
+            <span class="text-[10px] text-brand-dim font-normal">格式: [标签] 事项内容 | 备注</span>
+          </label>
+          <textarea id="input-sop-steps" rows="6" placeholder="每行一个核查步骤，例如：
+[机位] 主辅机位搭建并锁定焦段景深 | 副机位偏30度
+[布光] 主光打在远离机位一侧做窄面光 | 柔光箱+格栅
+[音频] 开启录音机 -12dB 安全音轨双保险 | 拍手打点" class="w-full bg-black border border-white rounded-none px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-emerald font-mono leading-relaxed"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-white flex items-center justify-between">
+          <button type="button" onclick="closeSopModal()" class="px-4 py-2 border border-white bg-white text-black font-bold text-xs hover:bg-black hover:text-white transition">
+            取消
+          </button>
+          <button type="submit" class="px-5 py-2 border border-brand-emerald bg-brand-emerald text-white font-bold text-xs transition active:scale-95 shadow-[4px_4px_0_0_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5">
+            保存 SOP 档案
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL: EDIT/ADD GEAR RENTAL -->
   <div id="modal-rental" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
     <div class="bg-black border border-white rounded-none max-w-lg w-full p-4 sm:p-6 shadow-[8px_8px_0_0_rgba(255,255,255,1)] space-y-4 my-8">
@@ -984,6 +1099,501 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
+    
+    // ==========================================
+    // SOP & MEMO ARCHIVE MODULE (标准化作业与备忘库)
+    // ==========================================
+    const STORAGE_KEY_SOPS = 'shootflow_sops_v2';
+    const INITIAL_SOPS_DATA = [
+      {
+        id: "sop_interview_lighting",
+        title: "双机位采访与电影感布光 SOP",
+        category: "🎬 摄制视听",
+        updatedAt: "2026-08-27",
+        memo: "• 主光永远打在采访对象远离摄像机的一侧（窄面光/Short Lighting），制造自然面部立体阴影，坚决避免大平光或阴阳脸。\n• 轮廓光（Kicker/Rim）从被摄者后方 45° 打入，分离发丝与暗色背景。\n• 领夹麦贴在胸骨正中防衣物摩擦，录音前务必监听 10 秒底噪并拍手打点音画同步。",
+        steps: [
+          { text: "主辅机位确定与景深构图锁定（全景正对，特写偏30°主光侧）", tag: "机位", note: "两机位色彩模式及白平衡必须绝对一致", isCritical: true },
+          { text: "主光搭建：加装柔光箱与格栅，打在远机位侧（窄面光）", tag: "布光", note: "光比控制在 1:2 或 1:3", isCritical: true },
+          { text: "辅光与暗部补光：使用米萝反光板或低功率漫射灯微弱提亮暗部", tag: "布光", note: "避免破坏面部阴影过渡", isCritical: false },
+          { text: "轮廓光与背景光布置：后方 45° 勾勒发丝，背景点缀小暖光", tag: "布光", note: "避免轮廓光直射镜头产生眩光", isCritical: false },
+          { text: "音频双保险：无线领夹麦胸骨固定 + 吊杆指向枪麦双路拾音", tag: "音频", note: "发射端加防风毛衣，接收端开启 -12dB 安全轨", isCritical: true },
+          { text: "现场底噪试听与手机强制飞行模式宣讲", tag: "环境", note: "排查空调、冰箱、风扇等恒定低频噪音", isCritical: true },
+          { text: "开机录制前拍手打点与对焦点锁定", tag: "场记", note: "确认 REC 红框常亮，双机均进入录制状态", isCritical: true }
+        ]
+      },
+      {
+        id: "sop_dit_backup",
+        title: "DIT 与外置硬盘双备份归档工作流",
+        category: "💾 DIT与数据",
+        updatedAt: "2026-08-27",
+        memo: "• 严格遵循 3-2-1 备份原则：卡内原始素材 + 主工作固态盘 (SSD) + 离线归档机械盘 (HDD)。\n• 校验铁律：必须先执行 Level 1 字节对比，再跑 Level 2 (头中尾 64KB) 哈希采样。\n• 未完成双盘校验并在交接单上打勾前，严禁格式化任何机身存储卡！",
+        steps: [
+          { text: "拔卡前确认机身读写指示灯完全熄灭，物理拨动防写保护锁", tag: "安全", note: "防止断电或热拔插导致文件头损坏", isCritical: true },
+          { text: "记录卷号 Roll 编号与机位编号（如 A001_C001R01）", tag: "卷号", note: "贴上黄色“待拷”标签纸", isCritical: true },
+          { text: "使用专用校验拷贝软件（如 ShotPut Pro / 银河快拷）同时写入双盘", tag: "拷贝", note: "主工作盘(NVMe SSD) + 备用归档盘(HDD)", isCritical: true },
+          { text: "生成 MD5 / xxHash 校验报告并核验字节一致性 (0 Error)", tag: "校验", note: "Level 1 字节对齐 + Level 2 采样哈希", isCritical: true },
+          { text: "在 DaVinci Resolve 中快速拉片抽检第一帧与最后一帧，验证 XML 完整性", tag: "质检", note: "排查 Sony 陀螺仪与镜头元数据是否丢失", isCritical: true },
+          { text: "贴上绿色“已验”标签并清空卡，释放给摄影组继续开机", tag: "交接", note: "双人核验签字确认", isCritical: false }
+        ]
+      },
+      {
+        id: "sop_livestreaming",
+        title: "多机位推流与现场直播保障 SOP",
+        category: "📡 直播推流",
+        updatedAt: "2026-08-27",
+        memo: "• 直播核心三要素：网络双冗余、主备推流电脑双路、音频防爆音。\n• 专线网线直连推流机，严禁使用现场公共 WiFi；备用 5G 聚合路由或手机热点待命。\n• 调音台主输出到导播台必须串接硬件压限器，防止高声大喊爆音。",
+        steps: [
+          { text: "专线测速与双网络热备绑定（有线专线主路 + 5G聚合备份）", tag: "网络", note: "上行带宽保证至少 30Mbps 以上", isCritical: true },
+          { text: "多路视频源帧率与分辨率严格统一（1080p50/60 或 4K25）", tag: "视频", note: "确认采集卡 EDID 信号握手正常", isCritical: true },
+          { text: "无线麦扫频排查干扰信道，调音台 Aux 输出电平校准", tag: "音频", note: "主输出串接压限器，电平控制在 -6dB ~ -12dB", isCritical: true },
+          { text: "推流码配置与主备推流服务器测试推流 15 分钟稳定性", tag: "推流", note: "检查丢帧率是否为 0%", isCritical: true },
+          { text: "Tally 提示灯与返送电视监看画面确认", tag: "监看", note: "确保主持人和导播沟通无延迟", isCritical: false },
+          { text: "开播前 5 分钟垫乐彩条播放，启动主备机本地高清母带录制", tag: "录制", note: "双重录制防止云端断流丢素材", isCritical: true }
+        ]
+      },
+      {
+        id: "sop_financial_invoice",
+        title: "器材租赁报销与客户对公走账合规 SOP",
+        category: "💰 财务走账",
+        updatedAt: "2026-08-27",
+        memo: "• 器材租赁合同与公户名称严格对齐，专票/普票税点必须提前书面确认。\n• 行程单（滴滴/客运）与发票日期、金额必须 1:1 匹配，报销重命名统一使用 MMDD_项目名_分类_序号。\n• 遇到设备故障免除费用时，必须在微信中留存对方确认记录截图。",
+        steps: [
+          { text: "前期报价确认与客户开票抬头、税号书面核定", tag: "合同", note: "确认普票 1% 或专票 6%/13%", isCritical: true },
+          { text: "租赁器材现场清点单与取还单拍照存证", tag: "小票", note: "若有设备故障第一时间沟通免除并留截图", isCritical: true },
+          { text: "行程单与电子发票 1:1 金额校验与标准化重命名归档", tag: "发票", note: "命名规范: MMDD_项目名_发票_01.pdf", isCritical: true },
+          { text: "录入 SHOOT FLOW 台账系统并核算税后金额", tag: "记账", note: "生成格式化对账单与客户确认", isCritical: false },
+          { text: "公户打款到账核对并标记已结清状态", tag: "核销", note: "留存银行电子回单", isCritical: true }
+        ]
+      },
+      {
+        id: "sop_extreme_shoot",
+        title: "车载与外景极限拍摄安全防忘 SOP",
+        category: "⚡ 极限与特殊拍摄",
+        updatedAt: "2026-08-27",
+        memo: "• 吸盘上车前必须用无水乙醇擦拭车漆与吸盘胶面，抽真空指示线完全隐藏并加装安全钢丝绳双保险。\n• 极端低温天气电池贴身保暖，备足外挂大容量 V 口供电。\n• 航拍与车拍必须提前规划行车路线与安全刹车距离。",
+        steps: [
+          { text: "车漆与吸盘接触面无水乙醇彻底脱脂清洁", tag: "安全", note: "严禁在车蜡或灰尘表面直接按压吸盘", isCritical: true },
+          { text: "真空吸盘按压抽气直至红/白安全警戒线完全隐藏", tag: "结构", note: "每隔 30 分钟检查一次气压状态", isCritical: true },
+          { text: "挂装金属防坠安全钢丝绳（固定于车内把手或结构件）", tag: "双保险", note: "主吸盘万一脱落时提供二级保护", isCritical: true },
+          { text: "镜头 ND 滤镜压光防过曝，快门角度固定在 180° 开角", tag: "参数", note: "保持动态模糊真实感", isCritical: false },
+          { text: "低温环境电池贴身保暖与大容量 V 口外挂供电", tag: "电力", note: "锂电池低于 0 度电量会断崖式下跌", isCritical: true },
+          { text: "车载图传天线架设与监看车辆保持安全跟车距离", tag: "图传", note: "车队统一对讲机频道保活", isCritical: true }
+        ]
+      }
+    ];
+
+    let sops = [];
+    let activeSopCategory = 'ALL';
+    let sopSearchQuery = '';
+
+    function loadSopData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_SOPS);
+        if (raw) {
+          sops = JSON.parse(raw);
+        } else {
+          sops = JSON.parse(JSON.stringify(INITIAL_SOPS_DATA));
+          saveSopData(false);
+        }
+      } catch (e) {
+        console.error('Failed to load SOP data:', e);
+        sops = JSON.parse(JSON.stringify(INITIAL_SOPS_DATA));
+      }
+    }
+
+    function saveSopData(triggerPush = true) {
+      localStorage.setItem(STORAGE_KEY_SOPS, JSON.stringify(sops));
+      if (triggerPush) {
+        const now = Date.now();
+        localStorage.setItem('shootflow_updated_at', now.toString());
+        pushToCloud(now);
+      }
+    }
+
+    function renderSopUI() {
+      const container = document.getElementById('sop-cards-container');
+      const pillsContainer = document.getElementById('sop-category-pills');
+      if (!container) return;
+
+      // 1. Render Category Pills
+      const categories = ['ALL', ...new Set(sops.map(s => s.category || '未分类'))];
+      if (pillsContainer) {
+        pillsContainer.innerHTML = categories.map(cat => {
+          const isAct = cat === activeSopCategory;
+          const label = cat === 'ALL' ? '全部 (ALL)' : cat;
+          return `
+            <button onclick="filterSopCategory('${cat}')" class="px-2.5 py-1 rounded-none uppercase transition shrink-0 ${
+              isAct ? 'bg-white text-black font-bold' : 'bg-black border border-white text-brand-dim hover:text-white hover:border-white'
+            }">
+              ${label}
+            </button>
+          `;
+        }).join('');
+      }
+
+      // 2. Filter SOPs
+      let filtered = sops || [];
+      if (activeSopCategory !== 'ALL') {
+        filtered = filtered.filter(s => s.category === activeSopCategory);
+      }
+      if (sopSearchQuery) {
+        filtered = filtered.filter(s => {
+          const str = (s.title + ' ' + s.category + ' ' + (s.memo || '') + ' ' + JSON.stringify(s.steps || [])).toLowerCase();
+          return str.includes(sopSearchQuery);
+        });
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-black border border-white p-8 text-center text-xs text-brand-dim font-mono">
+            没有找到匹配的 SOP 档案（可点击上方「+ 新建 SOP」进行录入）
+          </div>
+        `;
+        return;
+      }
+
+      // 3. Render Cards
+      container.innerHTML = filtered.map(sop => {
+        const stepsCount = (sop.steps || []).length;
+        const memoLines = (sop.memo || '').split('\n').filter(l => l.trim());
+
+        return `
+          <div class="bg-black border border-white rounded-none p-4 sm:p-5 space-y-4 shadow-[6px_6px_0_0_rgba(255,255,255,1)] transition-all">
+            
+            <!-- Card Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white pb-3">
+              <div class="space-y-1 min-w-0">
+                <div class="flex items-center space-x-2 flex-wrap gap-y-1 font-mono">
+                  <span class="px-2 py-0.5 border border-brand-emerald bg-black text-brand-emerald text-[10px] font-bold uppercase">
+                    ${sop.category || '通用'}
+                  </span>
+                  <span class="text-[10px] text-brand-dim">DATE: ${sop.updatedAt || '2026.08.27'}</span>
+                  <span class="text-[10px] text-brand-dim">•</span>
+                  <span class="text-[10px] text-brand-dim font-bold">${stepsCount} STEPS</span>
+                </div>
+                <h4 class="text-base sm:text-lg font-bold font-serif text-white tracking-tight pt-0.5">
+                  ${sop.title}
+                </h4>
+              </div>
+
+              <!-- Top Actions: Spawn Checklist & Manage -->
+              <div class="flex items-center space-x-2 shrink-0 font-mono">
+                <button onclick="convertSopToChecklist('${sop.id}')" class="px-3.5 py-1.5 border-2 border-brand-emerald bg-brand-emerald hover:bg-emerald-400 text-black text-xs font-bold uppercase transition flex items-center space-x-1.5 active:scale-95 shadow-[3px_3px_0_0_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 fill-black"></i>
+                  <span>转为出工 Checklist</span>
+                </button>
+
+                <button onclick="copySopText('${sop.id}')" class="p-1.5 border border-white bg-black hover:bg-white hover:text-black text-white transition active:scale-95 shrink-0" title="复制 SOP 备忘文本">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+
+                <button onclick="openEditSopModal('${sop.id}')" class="p-1.5 border border-white bg-black hover:bg-white hover:text-black text-white transition active:scale-95 shrink-0" title="编辑 SOP">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5 text-brand-cyan"></i>
+                </button>
+
+                <button onclick="deleteSop('${sop.id}')" class="p-1.5 border border-white bg-black hover:bg-white hover:text-brand-red text-white transition active:scale-95 shrink-0" title="删除 SOP">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Heart Section 1: Core Memos & Mantras (心法/备忘) -->
+            ${memoLines.length > 0 ? `
+              <div class="bg-black border border-white/60 p-3 sm:p-3.5 space-y-1.5 font-mono text-xs">
+                <div class="flex items-center gap-1.5 text-brand-emerald font-bold text-[11px] uppercase tracking-wider">
+                  <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                  <span>核心心法 & 避坑备忘 (MEMOS & PITFALLS)</span>
+                </div>
+                <div class="space-y-1 text-white font-sans text-xs leading-relaxed pl-1">
+                  ${memoLines.map(line => `<p class="flex items-start gap-1.5"><span class="text-brand-emerald font-bold shrink-0">▸</span><span>${line.replace(/^[•\-\*]\s*/, '')}</span></p>`).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Heart Section 2: Action Steps Preview -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-[11px] font-mono text-brand-dim uppercase">
+                <span>标准化执行步骤 (${stepsCount})</span>
+                <span>EXECUTION CHECKLIST</span>
+              </div>
+              <div class="bg-black border border-white divide-y divide-white/20">
+                ${(sop.steps || []).map((st, sIdx) => `
+                  <div class="p-2.5 flex items-start justify-between gap-2 text-xs font-mono">
+                    <div class="flex items-start space-x-2.5 min-w-0">
+                      <span class="text-brand-dim font-bold shrink-0 text-[11px]">${String(sIdx + 1).padStart(2, '0')}.</span>
+                      <div class="min-w-0 space-y-0.5">
+                        <div class="flex items-center space-x-2 flex-wrap">
+                          <span class="px-1.5 py-0.2 border text-[10px] uppercase font-bold shrink-0 ${getTagBadgeClass(st.tag)}">
+                            ${st.tag || 'CHECK'}
+                          </span>
+                          <span class="font-sans font-medium text-white ${st.isCritical ? 'font-bold text-brand-red' : ''}">
+                            ${st.text}
+                          </span>
+                        </div>
+                        ${st.note ? `<p class="text-[11px] text-brand-dim pl-1 font-mono">↳ ${st.note}</p>` : ''}
+                      </div>
+                    </div>
+                    ${st.isCritical ? `<span class="px-1.5 py-0.5 border border-brand-red text-brand-red text-[10px] shrink-0 font-bold">高危红线</span>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function filterSopCategory(cat) {
+      activeSopCategory = cat;
+      renderSopUI();
+    }
+
+    function handleSopSearch() {
+      sopSearchQuery = (document.getElementById('sop-search-input')?.value || '').trim().toLowerCase();
+      renderSopUI();
+    }
+
+    // ==========================================
+    // CONVERT SOP TO LIVE CHECKLIST PROJECT
+    // ==========================================
+    function convertSopToChecklist(sopId) {
+      const sop = sops.find(s => s.id === sopId);
+      if (!sop) return;
+
+      const dateStr = new Date().toISOString().split('T')[0];
+      const projName = `${sop.title.replace(/\s*SOP\s*$/i, '')} · 实操出工`;
+      const projId = 'proj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+
+      // Create a streamlined 3-phase checklist based on the SOP steps
+      const steps = sop.steps || [];
+      const phase1Items = [];
+      const phase2Items = [];
+      const phase3Items = [];
+
+      steps.forEach((st, idx) => {
+        const itemObj = {
+          id: `item_sop_${idx}_${Date.now()}`,
+          text: st.text,
+          tag: st.tag || 'SOP',
+          note: st.note || '',
+          isCritical: !!st.isCritical,
+          checked: false,
+          isCustom: false
+        };
+
+        if (idx < Math.ceil(steps.length / 3)) {
+          phase1Items.push(itemObj);
+        } else if (idx < Math.ceil(steps.length * 2 / 3)) {
+          phase2Items.push(itemObj);
+        } else {
+          phase3Items.push(itemObj);
+        }
+      });
+
+      const newProject = {
+        id: projId,
+        name: projName,
+        date: dateStr,
+        description: `基于【${sop.title}】SOP 自动生成的出工执行清单。\n心法备忘：${(sop.memo || '').slice(0, 100)}...`,
+        isArchived: false,
+        templateId: 'tpl_from_sop',
+        phases: [
+          {
+            id: 'phase_sop_prep',
+            code: '01 / PREP',
+            title: '准备与布设阶段',
+            subtitle: '环境、机位与基础搭建',
+            icon: 'layout',
+            badge: '前置准备',
+            description: '按照 SOP 完成所有器材与前置环节准备。',
+            items: phase1Items.length > 0 ? phase1Items : [{ id: 'item_dummy_1', text: '前置器材与场地确认', tag: '准备', note: '', isCritical: false, checked: false, isCustom: false }]
+          },
+          {
+            id: 'phase_sop_action',
+            code: '02 / ACTION',
+            title: '核心执行与录制',
+            subtitle: '声画质量与关键参数核验',
+            icon: 'video',
+            badge: '核心作业',
+            description: '严格执行 SOP 标准，严防爆音/虚焦/偏色。',
+            items: phase2Items.length > 0 ? phase2Items : [{ id: 'item_dummy_2', text: '核心拍摄与声画录制', tag: '执行', note: '', isCritical: true, checked: false, isCustom: false }]
+          },
+          {
+            id: 'phase_sop_wrap',
+            code: '03 / WRAP',
+            title: '数据双备份与收尾',
+            subtitle: 'DIT、离线归档与交接',
+            icon: 'shield-check',
+            badge: '收尾归档',
+            description: '素材多盘哈希校验，确保数据零风险。',
+            items: phase3Items.length > 0 ? phase3Items : [{ id: 'item_dummy_3', text: '双盘校验备份与清卡交接', tag: '数据', note: '', isCritical: true, checked: false, isCustom: false }]
+          }
+        ]
+      };
+
+      projects.unshift(newProject);
+      currentProjectId = projId;
+      saveLocalData();
+      
+      // Switch back to FLOW tab immediately
+      switchMainTab('checklist');
+      triggerHaptic('success');
+      triggerConfetti();
+      showToast(`⚡ 已成功基于 SOP 创建出工清单：${projName}`);
+    }
+
+    // ==========================================
+    // SOP MODAL HANDLERS
+    // ==========================================
+    function openNewSopModal() {
+      document.getElementById('modal-sop-title').innerHTML = '<i data-lucide="plus" class="w-4 h-4 text-brand-emerald"></i> <span>新建标准 SOP 与备忘</span>';
+      document.getElementById('input-sop-id').value = '';
+      document.getElementById('input-sop-title').value = '';
+      document.getElementById('input-sop-category').value = '🎬 摄制视听';
+      document.getElementById('input-sop-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('input-sop-memo').value = '';
+      document.getElementById('input-sop-steps').value = '';
+      document.getElementById('modal-sop').classList.remove('hidden');
+      document.getElementById('modal-sop').classList.add('flex');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function openEditSopModal(sopId) {
+      const sop = sops.find(s => s.id === sopId);
+      if (!sop) return;
+
+      document.getElementById('modal-sop-title').innerHTML = '<i data-lucide="edit-3" class="w-4 h-4 text-brand-cyan"></i> <span>编辑 SOP 档案</span>';
+      document.getElementById('input-sop-id').value = sop.id;
+      document.getElementById('input-sop-title').value = sop.title || '';
+      document.getElementById('input-sop-category').value = sop.category || '🎬 摄制视听';
+      document.getElementById('input-sop-date').value = sop.updatedAt || new Date().toISOString().split('T')[0];
+      document.getElementById('input-sop-memo').value = sop.memo || '';
+
+      const stepsText = (sop.steps || []).map(st => {
+        let line = '';
+        if (st.tag) line += `[${st.tag}] `;
+        line += st.text;
+        if (st.note) line += ` | ${st.note}`;
+        return line;
+      }).join('\n');
+
+      document.getElementById('input-sop-steps').value = stepsText;
+      document.getElementById('modal-sop').classList.remove('hidden');
+      document.getElementById('modal-sop').classList.add('flex');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function closeSopModal() {
+      const modal = document.getElementById('modal-sop');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function handleSaveSop() {
+      const id = document.getElementById('input-sop-id').value.trim();
+      const title = document.getElementById('input-sop-title').value.trim();
+      const category = document.getElementById('input-sop-category').value.trim() || '🎬 摄制视听';
+      const updatedAt = document.getElementById('input-sop-date').value || new Date().toISOString().split('T')[0];
+      const memo = document.getElementById('input-sop-memo').value.trim();
+      const stepsRaw = document.getElementById('input-sop-steps').value.trim();
+
+      if (!title) {
+        showToast('❌ 请填写 SOP 标题');
+        return;
+      }
+
+      // Parse Steps
+      const steps = [];
+      if (stepsRaw) {
+        const lines = stepsRaw.split('\n').map(l => l.trim()).filter(Boolean);
+        lines.forEach(line => {
+          let tag = 'CHECK';
+          let text = line;
+          let note = '';
+
+          // Match [Tag]
+          const tagMatch = text.match(/^\[([^\]]+)\]\s*/);
+          if (tagMatch) {
+            tag = tagMatch[1];
+            text = text.substring(tagMatch[0].length).trim();
+          }
+
+          // Match | Note
+          if (text.includes('|')) {
+            const parts = text.split('|');
+            text = parts[0].trim();
+            note = parts.slice(1).join('|').trim();
+          }
+
+          const isCritical = /高危|红线|必须|安全|严禁|MD5|校验/i.test(tag + text + note);
+
+          steps.push({ text, tag, note, isCritical });
+        });
+      }
+
+      if (id) {
+        // Edit
+        const idx = sops.findIndex(s => s.id === id);
+        if (idx !== -1) {
+          sops[idx] = { ...sops[idx], title, category, updatedAt, memo, steps };
+        }
+        showToast('✅ SOP 档案更新成功！');
+      } else {
+        // Create
+        const newSop = {
+          id: 'sop_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          title,
+          category,
+          updatedAt,
+          memo,
+          steps
+        };
+        sops.unshift(newSop);
+        showToast('🎉 新建标准 SOP 成功！');
+      }
+
+      saveSopData();
+      closeSopModal();
+      renderSopUI();
+    }
+
+    function deleteSop(sopId) {
+      if (!confirm('确定要删除这份 SOP 档案吗？此操作不可撤销。')) return;
+      sops = sops.filter(s => s.id !== sopId);
+      saveSopData();
+      renderSopUI();
+      showToast('🗑️ SOP 档案已删除');
+    }
+
+    function copySopText(sopId) {
+      const sop = sops.find(s => s.id === sopId);
+      if (!sop) return;
+
+      let text = `📋 【SOP 标准规范】${sop.title}\n`;
+      text += `分类: ${sop.category} | 日期: ${sop.updatedAt}\n\n`;
+      if (sop.memo) {
+        text += `【核心心法与避坑要点】\n${sop.memo}\n\n`;
+      }
+      text += `【标准执行步骤】\n`;
+      (sop.steps || []).forEach((st, idx) => {
+        text += `${idx + 1}. [${st.tag}] ${st.text}${st.note ? ` (说明: ${st.note})` : ''}\n`;
+      });
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          triggerHaptic('success');
+          showToast('📋 已将 SOP 全文复制到剪贴板！');
+        });
+      } else {
+        showToast('⚠️ 当前浏览器不支持自动复制，请手动选择复制');
+      }
+    }
+
     // ==========================================
     // 1. DEFAULT TEMPLATE DATA (Built from Flomo)
     // ==========================================
@@ -1263,25 +1873,39 @@
     function switchMainTab(tab) {
       currentMainTab = tab;
       const btnChecklist = document.getElementById('tab-btn-checklist');
+      const btnSop = document.getElementById('tab-btn-sop');
       const btnLedger = document.getElementById('tab-btn-ledger');
       const viewChecklist = document.getElementById('view-checklist');
+      const viewSop = document.getElementById('view-sop');
       const viewLedger = document.getElementById('view-ledger');
       const ledgerActions = document.getElementById('ledger-top-actions');
 
+      // Reset all buttons to inactive brutalist style
+      const inactiveClass = 'px-3 sm:px-5 py-1 font-semibold uppercase transition-all bg-black text-brand-dim hover:text-white border-r border-white flex items-center gap-1.5';
+      const activeClass = 'px-3 sm:px-5 py-1 font-bold uppercase transition-all bg-brand-emerald text-white border-r border-white flex items-center gap-1.5';
+      
+      if (btnChecklist) btnChecklist.className = (tab === 'checklist') ? activeClass : inactiveClass;
+      if (btnSop) btnSop.className = (tab === 'sop') ? activeClass : inactiveClass;
+      if (btnLedger) btnLedger.className = (tab === 'ledger') ? activeClass : inactiveClass.replace('border-r', '');
+
+      // Hide all views first
+      if (viewChecklist) viewChecklist.classList.add('hidden');
+      if (viewSop) viewSop.classList.add('hidden');
+      if (viewLedger) viewLedger.classList.add('hidden');
+      if (ledgerActions) ledgerActions.classList.add('hidden');
+
       if (tab === 'checklist') {
-        btnChecklist.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-none text-xs font-bold transition active:scale-95 bg-emerald-500/20 text-brand-emerald border border-emerald-500/30';
-        btnLedger.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-none text-xs font-semibold transition active:scale-95 bg-black hover:bg-blackHover text-white border border-white';
-        viewChecklist.classList.remove('hidden');
-        viewLedger.classList.add('hidden');
-        if (ledgerActions) ledgerActions.classList.add('hidden');
-      } else {
-        btnChecklist.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-none text-xs font-semibold transition active:scale-95 bg-black hover:bg-blackHover text-white border border-white';
-        btnLedger.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-none text-xs font-bold transition active:scale-95 bg-emerald-500/20 text-brand-emerald border border-emerald-500/30';
-        viewChecklist.classList.add('hidden');
-        viewLedger.classList.remove('hidden');
+        if (viewChecklist) viewChecklist.classList.remove('hidden');
+        renderUI();
+      } else if (tab === 'sop') {
+        if (viewSop) viewSop.classList.remove('hidden');
+        renderSopUI();
+      } else if (tab === 'ledger') {
+        if (viewLedger) viewLedger.classList.remove('hidden');
         if (ledgerActions) ledgerActions.classList.remove('hidden');
         renderLedgerUI();
       }
+
       if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
@@ -1891,6 +2515,7 @@
     function initApp() {
       checkAuthStatus();
       loadLedgerData();
+      loadSopData();
       try {
       initTheme();
       
@@ -2577,7 +3202,7 @@
       const statusEl = document.getElementById('sync-status');
       if (statusEl) statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 上传中...`;
       
-      const payload = { projects, customTemplates, currentProjectId, gearLedger };
+      const payload = { projects, customTemplates, currentProjectId, gearLedger, sops };
       try {
         const { error } = await supabaseClient.from('shoot_workspace').upsert({
           id: wsId,
@@ -3360,7 +3985,7 @@
       const wsId = getWorkspaceId();
 
       syncTimeout = setTimeout(async () => {
-        const payload = { projects, customTemplates, currentProjectId, gearLedger };
+        const payload = { projects, customTemplates, currentProjectId, gearLedger, sops };
         try {
           const { error } = await supabaseClient.from('shoot_workspace').upsert({
             id: wsId,
