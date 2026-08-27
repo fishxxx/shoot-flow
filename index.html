@@ -935,12 +935,13 @@
         <div>
           <label class="block text-brand-dim mb-1 font-bold flex items-center justify-between">
             <span>执行步骤 / Checklist 事项 (Steps & Tasks)</span>
-            <span class="text-[10px] text-brand-dim font-normal">格式: [标签] 事项内容 | 备注</span>
+            <span class="text-[10px] text-brand-emerald font-bold">💡 行首加 ! 标记为高危红线</span>
           </label>
-          <textarea id="input-sop-steps" rows="6" placeholder="每行一个核查步骤，例如：
-[机位] 主辅机位搭建并锁定焦段景深 | 副机位偏30度
-[布光] 主光打在远离机位一侧做窄面光 | 柔光箱+格栅
+          <textarea id="input-sop-steps" rows="6" placeholder="每行一个核查步骤，行首加 ! 或 * 标记为【高危红线】：
+! [机位] 主辅机位色彩与白平衡锁定 | 必须绝对一致
+! [布光] 主光加柔光箱打在远机位侧 | 窄面光防阴阳脸
 [音频] 开启录音机 -12dB 安全音轨双保险 | 拍手打点" class="w-full bg-black border border-white rounded-none px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-emerald font-mono leading-relaxed"></textarea>
+          <p class="text-[10px] text-brand-dim mt-1">格式说明：<code>! [分类标签] 具体步骤内容 | 补充备注说明</code>（支持 <code>!</code> 显式指定高危红线）</p>
         </div>
 
         <div class="pt-3 border-t border-white flex items-center justify-between">
@@ -1474,6 +1475,7 @@
 
       const stepsText = (sop.steps || []).map(st => {
         let line = '';
+        if (st.isCritical) line += '! ';
         if (st.tag) line += `[${st.tag}] `;
         line += st.text;
         if (st.note) line += ` | ${st.note}`;
@@ -1512,25 +1514,44 @@
       if (stepsRaw) {
         const lines = stepsRaw.split('\n').map(l => l.trim()).filter(Boolean);
         lines.forEach(line => {
+          let isCritical = false;
+          let rawLine = line;
+
+          // 1. Check leading ! or * or ⚠️ or ！
+          if (/^[!*⚠️!！]\s*/.test(rawLine)) {
+            isCritical = true;
+            rawLine = rawLine.replace(/^[!*⚠️!！]\s*/, '').trim();
+          }
+
           let tag = 'CHECK';
-          let text = line;
+          let text = rawLine;
           let note = '';
 
-          // Match [Tag]
+          // 2. Match [Tag]
           const tagMatch = text.match(/^\[([^\]]+)\]\s*/);
           if (tagMatch) {
             tag = tagMatch[1];
             text = text.substring(tagMatch[0].length).trim();
+            if (tag.includes('!') || tag.includes('高危') || tag.includes('红线')) {
+              isCritical = true;
+              tag = tag.replace(/[!*⚠️!！]/g, '').trim();
+            }
           }
 
-          // Match | Note
+          // 3. Match | Note
           if (text.includes('|')) {
             const parts = text.split('|');
             text = parts[0].trim();
             note = parts.slice(1).join('|').trim();
+            if (note.includes('!') || note.includes('高危') || note.includes('红线')) {
+              isCritical = true;
+            }
           }
 
-          const isCritical = /高危|红线|必须|安全|严禁|MD5|校验/i.test(tag + text + note);
+          // 4. Smart keyword fallback if not explicitly marked
+          if (!isCritical && /高危|红线|必须|安全|严禁|MD5|校验/i.test(tag + ' ' + text + ' ' + note)) {
+            isCritical = true;
+          }
 
           steps.push({ text, tag, note, isCritical });
         });
@@ -1581,7 +1602,8 @@
       }
       text += `【标准执行步骤】\n`;
       (sop.steps || []).forEach((st, idx) => {
-        text += `${idx + 1}. [${st.tag}] ${st.text}${st.note ? ` (说明: ${st.note})` : ''}\n`;
+        const critMark = st.isCritical ? '⚠️[高危] ' : '';
+        text += `${idx + 1}. ${critMark}[${st.tag}] ${st.text}${st.note ? ` (说明: ${st.note})` : ''}\n`;
       });
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
