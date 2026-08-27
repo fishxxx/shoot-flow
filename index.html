@@ -314,39 +314,43 @@
 
     
     /* =========================================================
-       RESPONSIVE MOBILE VIEWPORT & FONT SCALE ENGINE
+       RESPONSIVE MOBILE VIEWPORT & FONT SCALE ENGINE (NO TRUNCATION)
     ========================================================= */
+    * {
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    
     /* Mobile Base Scale Optimization */
     @media (max-width: 640px) {
       html {
-        font-size: 16.5px;
+        font-size: 15.5px;
       }
       button, input, textarea, a {
         touch-action: manipulation;
       }
-      /* Ensure subtext on mobile is comfortable to read */
       .item-text {
         font-size: 0.95rem !important;
-        line-height: 1.4 !important;
+        line-height: 1.45 !important;
       }
     }
 
-    /* 3-Tier Font Scale Engine */
+    /* 3-Tier Controlled Font Scale Engine */
     html[data-font-scale="large"] {
-      font-size: 18px;
+      font-size: 17px;
     }
     @media (max-width: 640px) {
       html[data-font-scale="large"] {
-        font-size: 19px;
+        font-size: 17px;
       }
     }
 
     html[data-font-scale="xlarge"] {
-      font-size: 20.5px;
+      font-size: 18.5px;
     }
     @media (max-width: 640px) {
       html[data-font-scale="xlarge"] {
-        font-size: 22px;
+        font-size: 18.5px;
       }
     }
 
@@ -413,20 +417,20 @@
       </div>
 
       <!-- Segmented Control (Center) -->
-      <div class="flex border border-white mx-auto font-mono text-xs">
-        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="px-3 sm:px-5 py-1 font-bold uppercase transition-all bg-brand-emerald text-white border-r border-white flex items-center gap-1.5">
+      <div class="flex border border-white mx-auto font-mono text-xs shrink-0">
+        <button id="tab-btn-checklist" onclick="switchMainTab('checklist')" class="px-2.5 sm:px-5 py-1 font-bold uppercase transition-all bg-brand-emerald text-white border-r border-white flex items-center gap-1">
           <i data-lucide="check-square" class="w-3.5 h-3.5"></i> FLOW
         </button>
-        <button id="tab-btn-sop" onclick="switchMainTab('sop')" class="px-3 sm:px-5 py-1 font-semibold uppercase transition-all bg-black text-brand-dim hover:text-white border-r border-white flex items-center gap-1.5">
+        <button id="tab-btn-sop" onclick="switchMainTab('sop')" class="px-2.5 sm:px-5 py-1 font-semibold uppercase transition-all bg-black text-brand-dim hover:text-white border-r border-white flex items-center gap-1">
           <i data-lucide="book-open" class="w-3.5 h-3.5"></i> SOP
         </button>
-        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="px-3 sm:px-5 py-1 font-semibold uppercase transition-all bg-black text-brand-dim hover:text-white flex items-center gap-1.5">
+        <button id="tab-btn-ledger" onclick="switchMainTab('ledger')" class="px-2.5 sm:px-5 py-1 font-semibold uppercase transition-all bg-black text-brand-dim hover:text-white flex items-center gap-1">
           <i data-lucide="calculator" class="w-3.5 h-3.5"></i> LEDGER
         </button>
       </div>
       
-      <!-- Invisible spacer for centering -->
-      <div class="w-16"></div>
+      <!-- Spacer for centering -->
+      <div class="w-8 sm:w-16 shrink-0"></div>
     </div>
   </header>
 
@@ -1358,18 +1362,18 @@
               <div class="bg-black border border-white divide-y divide-white/20">
                 ${(sop.steps || []).map((st, sIdx) => `
                   <div class="p-2.5 flex items-start justify-between gap-2 text-xs font-mono">
-                    <div class="flex items-start space-x-2.5 min-w-0">
-                      <span class="text-brand-dim font-bold shrink-0 text-[11px]">${String(sIdx + 1).padStart(2, '0')}.</span>
-                      <div class="min-w-0 space-y-0.5">
-                        <div class="flex items-center space-x-2 flex-wrap">
-                          <span class="px-1.5 py-0.2 border text-[10px] uppercase font-bold shrink-0 ${getTagBadgeClass(st.tag)}">
+                    <div class="flex items-start space-x-2.5 min-w-0 flex-1">
+                      <span class="text-brand-dim font-bold shrink-0 text-[11px] mt-0.5">${String(sIdx + 1).padStart(2, '0')}.</span>
+                      <div class="min-w-0 flex-1 space-y-0.5">
+                        <div class="flex items-start space-x-2 flex-wrap gap-y-1">
+                          <span class="px-1.5 py-0.2 border text-[10px] uppercase font-bold shrink-0 mt-0.5 ${getTagBadgeClass(st.tag)}">
                             ${st.tag || 'CHECK'}
                           </span>
-                          <span class="font-sans font-medium text-white ${st.isCritical ? 'font-bold text-brand-red' : ''}">
+                          <span class="font-sans font-medium text-white break-words flex-1 min-w-0 leading-relaxed ${st.isCritical ? 'font-bold text-brand-red' : ''}">
                             ${st.text}
                           </span>
                         </div>
-                        ${st.note ? `<p class="text-[11px] text-brand-dim pl-1 font-mono">↳ ${st.note}</p>` : ''}
+                        ${st.note ? `<p class="text-[11px] text-brand-dim pl-1 font-mono break-words leading-relaxed">↳ ${st.note}</p>` : ''}
                       </div>
                     </div>
                     ${st.isCritical ? `<span class="px-1.5 py-0.5 border border-brand-red text-brand-red text-[10px] shrink-0 font-bold">高危红线</span>` : ''}
@@ -2075,7 +2079,7 @@
                 <div class="ledger-item-row flex items-center justify-between text-xs py-2">
                   <div class="flex items-center space-x-2.5 min-w-0">
                     <span class="w-2 h-2 rounded-full ${isExempt ? 'bg-brand-red' : 'bg-emerald-400'} shrink-0"></span>
-                    <span class="ledger-item-name text-xs sm:text-sm truncate">${it.name}</span>
+                    <span class="ledger-item-name text-xs sm:text-sm break-words flex-1">${it.name}</span>
                     <span class="ledger-item-spec text-[11px] font-mono font-medium">${it.spec || ''}</span>
                   </div>
                   <div class="flex items-center space-x-2 shrink-0">
@@ -2935,7 +2939,7 @@
                   <span class="text-xs font-bold font-mono text-white tracking-wider">${currentPhase.code}</span>
                   <span class="text-xs px-2.5 py-0.5 rounded-none font-semibold tracking-wide border ${ isComplete ? 'bg-black text-white border-white' : 'border-white text-white' }">${currentPhase.badge}</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-bold text-white truncate mt-0.5 flex items-center gap-2 tracking-tight">
+                <h3 class="text-base sm:text-lg font-bold text-white break-words leading-tight mt-0.5 flex items-center gap-2 tracking-tight">
                   ${currentPhase.title}
                   <span class="text-xs font-normal text-brand-dim hidden sm:inline">— ${currentPhase.subtitle}</span>
                 </h3>
@@ -2956,14 +2960,14 @@
                       ${item.checked ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-xs">⚠️</span>' : '')}
                     </button>
                     <div class="flex-1 min-w-0">
-                      <div class="flex items-center space-x-2">
-                        ${item.tag && item.tag !== '自定义' ? `<span class="text-[10px] px-2 py-0.5 rounded-none font-semibold font-mono border shrink-0 ${getTagBadgeClass(item.tag)}">${item.tag}</span>` : ''}
-                        <span class="text-sm sm:text-base font-medium leading-snug ${ item.checked ? 'text-brand-dim line-through' : (item.isCritical ? 'text-red-400 font-bold' : 'text-white') }">${item.text}</span>
+                      <div class="flex items-start space-x-2 flex-wrap gap-y-1">
+                        ${item.tag && item.tag !== '自定义' ? `<span class="text-[10px] px-1.5 py-0.5 rounded-none font-semibold font-mono border shrink-0 mt-0.5 ${getTagBadgeClass(item.tag)}">${item.tag}</span>` : ''}
+                        <span class="text-sm sm:text-base font-medium leading-relaxed break-words flex-1 min-w-0 ${ item.checked ? 'text-brand-dim line-through' : (item.isCritical ? 'text-red-400 font-bold' : 'text-white') }">${item.text}</span>
                       </div>
                       ${item.note ? `
-                        <div class="text-[11px] font-mono text-brand-dim mt-0.5 flex items-center space-x-1 leading-tight">
-                          <span class="text-cyan-400/80 font-bold">↳</span>
-                          <span>${item.note}</span>
+                        <div class="text-[11px] font-mono text-brand-dim mt-1 flex items-start space-x-1.5 leading-snug break-words">
+                          <span class="text-cyan-400/80 font-bold shrink-0">↳</span>
+                          <span class="break-words flex-1 min-w-0">${item.note}</span>
                         </div>
                       ` : ''}
                     </div>
@@ -3060,7 +3064,7 @@
                   <span class="font-mono text-xs font-bold uppercase tracking-wider">${phase.code}</span>
                   <span class="text-[10px] px-1.5 py-0.5 border font-mono tracking-wide ${ isComplete ? 'border-white text-white' : 'border-white text-brand-dim' }">${phase.badge}</span>
                 </div>
-                <h3 class="text-lg sm:text-xl font-bold font-serif truncate mt-0.5 flex items-center gap-2 tracking-tight">
+                <h3 class="text-lg sm:text-xl font-bold font-serif break-words leading-tight mt-0.5 flex items-center gap-2 tracking-tight">
                   ${phase.title}
                   <span class="text-xs font-mono font-normal opacity-70 hidden sm:inline">— ${phase.subtitle}</span>
                 </h3>
@@ -3095,18 +3099,18 @@
                   </button>
 
                   <div class="flex-1 min-w-0 cursor-pointer select-none" onclick="toggleItem(${phaseIndex}, ${itemIndex})">
-                    <div class="flex items-center space-x-2">
-                      <span class="text-[10px] sm:text-xs px-2 py-0.5 border font-semibold font-mono uppercase shrink-0 ${getTagBadgeClass(item.tag)}">
+                    <div class="flex items-start space-x-2 flex-wrap gap-y-1">
+                      <span class="text-[10px] sm:text-xs px-1.5 py-0.5 border font-semibold font-mono uppercase shrink-0 mt-0.5 ${getTagBadgeClass(item.tag)}">
                         ${item.tag || 'CHECK'}
                       </span>
-                      <span class="text-xs sm:text-sm font-bold ${(item.isCritical && !item.checked) ? 'text-brand-red' : 'text-white'} item-text leading-snug ${item.checked ? 'checked-text line-through opacity-50 decoration-brand-emerald decoration-2' : ''}">
+                      <span class="text-xs sm:text-sm font-bold ${(item.isCritical && !item.checked) ? 'text-brand-red' : 'text-white'} item-text leading-relaxed break-words flex-1 min-w-0 ${item.checked ? 'checked-text line-through opacity-50 decoration-brand-emerald decoration-2' : ''}">
                         ${item.text}
                       </span>
                     </div>
                     ${item.note ? `
-                      <div class="text-[11px] font-mono text-brand-dim mt-0.5 pl-0.5 flex items-center space-x-1 leading-tight">
-                        <span class="text-brand-emerald font-bold">↳</span>
-                        <span>${item.note}</span>
+                      <div class="text-[11px] font-mono text-brand-dim mt-1 pl-0.5 flex items-start space-x-1.5 leading-snug break-words">
+                        <span class="text-brand-emerald font-bold shrink-0">↳</span>
+                        <span class="break-words flex-1 min-w-0">${item.note}</span>
                       </div>
                     ` : ''}
                   </div>
