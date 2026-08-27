@@ -2209,7 +2209,7 @@
               const pDone = pTotal > 0 && pChecked === pTotal;
               const isActive = idx === minimalActivePhase;
               return `
-                <button onclick="setMinimalActivePhase(${idx})" class="shrink-0 px-3.5 py-2 rounded-none text-xs font-medium transition-all flex items-center space-x-1.5 active:scale-95 ${ isActive ? 'bg-white text-black font-bold shadow-[0_0_15px_rgba(255,255,255,0.2)] scale-[1.02]' : pDone 'bg-black text-white border border-white' 'bg-transparent text-brand-dim border-white hover:border-white' }">
+                <button onclick="setMinimalActivePhase(${idx})" class="shrink-0 px-3.5 py-2 rounded-none text-xs font-medium transition-all flex items-center space-x-1.5 active:scale-95 ${ isActive ? 'bg-white text-black font-bold shadow-[0_0_15px_rgba(255,255,255,0.2)] scale-[1.02]' : (pDone ? 'bg-black text-white border border-white' : 'bg-transparent text-brand-dim border-white hover:border-white') }">
                   <span>${pDone ? '✓' : (idx + 1)}</span>
                   <span>${p.title}</span>
                   <span class="text-[10px] opacity-75 font-mono">(${pChecked}/${pTotal})</span>
@@ -2224,7 +2224,7 @@
               <div class="min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
                   <span class="text-xs font-bold font-mono text-white tracking-wider">${currentPhase.code}</span>
-                  <span class="text-xs px-2.5 py-0.5 rounded-none font-semibold tracking-wide border ${ isComplete ? 'bg-black text-white border-white' : }">${currentPhase.badge}</span>
+                  <span class="text-xs px-2.5 py-0.5 rounded-none font-semibold tracking-wide border ${ isComplete ? 'bg-black text-white border-white' : 'border-white text-white' }">${currentPhase.badge}</span>
                 </div>
                 <h3 class="text-base sm:text-lg font-bold text-white truncate mt-0.5 flex items-center gap-2 tracking-tight">
                   ${currentPhase.title}
@@ -2243,13 +2243,13 @@
               ${currentPhase.items.map((item, itemIndex) => `
                 <div class="py-3 sm:py-3.5 flex items-center justify-between group select-none hover:bg-black active:bg-black transition px-2 -mx-2 rounded-none cursor-pointer" onclick="toggleItem(${minimalActivePhase}, ${itemIndex})">
                   <div class="flex items-center space-x-3.5 flex-1 min-w-0 pr-2">
-                    <button onclick="event.stopPropagation(); toggleItem(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-full flex items-center justify-center border transition-all shrink-0 active:scale-90 ${ item.checked ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]' : (item.isCritical && !item.checked) 'border-brand-red bg-black shadow-[0_0_8px_rgba(239,68,68,0.4)]' 'border-white bg-transparent hover:border-white' }">
+                    <button onclick="event.stopPropagation(); toggleItem(${minimalActivePhase}, ${itemIndex})" class="w-7 h-7 rounded-full flex items-center justify-center border transition-all shrink-0 active:scale-90 ${ item.checked ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ((item.isCritical && !item.checked) ? 'border-brand-red bg-black shadow-[0_0_8px_rgba(239,68,68,0.4)]' : 'border-white bg-transparent hover:border-white') }">
                       ${item.checked ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-xs">⚠️</span>' : '')}
                     </button>
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center space-x-2">
                         ${item.tag && item.tag !== '自定义' ? `<span class="text-[10px] px-2 py-0.5 rounded-none font-semibold font-mono border shrink-0 ${getTagBadgeClass(item.tag)}">${item.tag}</span>` : ''}
-                        <span class="text-sm sm:text-base font-medium leading-snug ${ item.checked ? 'text-brand-dim line-through' : (item.isCritical 'text-red-400 font-bold' 'text-white') }">${item.text}</span>
+                        <span class="text-sm sm:text-base font-medium leading-snug ${ item.checked ? 'text-brand-dim line-through' : (item.isCritical ? 'text-red-400 font-bold' : 'text-white') }">${item.text}</span>
                       </div>
                       ${item.note ? `
                         <div class="text-[11px] font-mono text-brand-dim mt-0.5 flex items-center space-x-1 leading-tight">
@@ -2349,7 +2349,7 @@
               <div class="flex-1 min-w-0 pr-2">
                 <div class="flex items-center space-x-2">
                   <span class="font-mono text-xs font-bold uppercase tracking-wider">${phase.code}</span>
-                  <span class="text-[10px] px-1.5 py-0.5 border font-mono tracking-wide ${ isComplete ? 'border-white text-white' : }">${phase.badge}</span>
+                  <span class="text-[10px] px-1.5 py-0.5 border font-mono tracking-wide ${ isComplete ? 'border-white text-white' : 'border-white text-brand-dim' }">${phase.badge}</span>
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold font-serif truncate mt-0.5 flex items-center gap-2 tracking-tight">
                   ${phase.title}
@@ -2379,9 +2379,9 @@
 
             <div class="space-y-2">
               ${phase.items.map((item, itemIndex) => `
-                <div class="group flex items-center space-x-3 p-3 sm:p-2.5 border transition-all active:bg-black ${ item.checked ? 'border-white opacity-50 bg-black' : hover:border-white shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]' }">
+                <div class="group flex items-center space-x-3 p-3 sm:p-2.5 border transition-all active:bg-black ${ item.checked ? 'border-white opacity-50 bg-black' : 'hover:border-white shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]' }">
                   
-                  <button onclick="toggleItem(${phaseIndex}, ${itemIndex})" class="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center border transition-all shrink-0 active:scale-90 ${ item.checked ? 'bg-brand-emerald border-brand-emerald text-white' : (item.isCritical && !item.checked) 'border-brand-emerald bg-black' 'border-white bg-black hover:bg-white hover:text-black' }">
+                  <button onclick="toggleItem(${phaseIndex}, ${itemIndex})" class="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center border transition-all shrink-0 active:scale-90 ${ item.checked ? 'bg-brand-emerald border-brand-emerald text-white' : ((item.isCritical && !item.checked) ? 'border-brand-emerald bg-black' : 'border-white bg-black hover:bg-white hover:text-black') }">
                     ${item.checked ? '<i data-lucide="check" class="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[3]"></i>' : (item.isCritical ? '<span class="text-[11px] sm:text-[10px]">!</span>' : '')}
                   </button>
 
@@ -2390,7 +2390,7 @@
                       <span class="text-[10px] sm:text-xs px-2 py-0.5 border font-semibold font-mono uppercase shrink-0 ${getTagBadgeClass(item.tag)}">
                         ${item.tag || 'CHECK'}
                       </span>
-                      <span class="text-xs sm:text-sm font-bold ${(item.isCritical && !item.checked) ? 'text-brand-red' : 'text-white'} item-text leading-snug ${item.checked 'checked-text line-through opacity-50 decoration-brand-emerald decoration-2' ''}">
+                      <span class="text-xs sm:text-sm font-bold ${(item.isCritical && !item.checked) ? 'text-brand-red' : 'text-white'} item-text leading-snug ${item.checked ? 'checked-text line-through opacity-50 decoration-brand-emerald decoration-2' : ''}">
                         ${item.text}
                       </span>
                     </div>
