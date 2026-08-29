@@ -306,6 +306,212 @@
     html.theme-light .shadow-\[0_-4px_20px_rgba\(0\,0\,0\,0\.5\)\] {
       box-shadow: 0 -4px 20px rgba(0,0,0,0.1) !important;
     }
+    
+    /* =========================================================
+       NOTION THEME (📝 Notion 经典暖白工作台风格)
+       Ivory (#f7f6f3), Slate Typography (#37352f), Soft Borders (#e9e9e8)
+    ========================================================= */
+    html.theme-notion {
+      color-scheme: light;
+      background-color: #f7f6f3;
+    }
+    html.theme-notion body {
+      background-color: #f7f6f3 !important;
+      color: #37352f !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    /* Cards & Containers in Notion */
+    html.theme-notion .bg-black {
+      background-color: #ffffff !important;
+      color: #37352f !important;
+    }
+    html.theme-notion .bg-white {
+      background-color: #37352f !important;
+      color: #ffffff !important;
+    }
+    html.theme-notion .text-white {
+      color: #37352f !important;
+    }
+    html.theme-notion .text-black {
+      color: #ffffff !important;
+    }
+    html.theme-notion .text-brand-dim {
+      color: #787774 !important;
+    }
+    
+    /* Borders in Notion: Soft Subtle Gray */
+    html.theme-notion .border-white {
+      border-color: #e9e9e8 !important;
+    }
+    html.theme-notion .border-black {
+      border-color: #37352f !important;
+    }
+    html.theme-notion .border-brand-dim {
+      border-color: #e0e0de !important;
+    }
+
+    /* Notion Soft Shadows (Elevated clean card style) */
+    html.theme-notion .shadow-\[8px_8px_0_0_rgba\(255\,255\,255\,1\)\],
+    html.theme-notion .shadow-\[8px_8px_0_0_rgba\(0\,0\,0\,1\)\] {
+      box-shadow: 0 1px 3px rgba(15, 15, 15, 0.06), 0 0 0 1px rgba(15, 15, 15, 0.08) !important;
+      border-radius: 6px !important;
+    }
+    html.theme-notion .shadow-\[6px_6px_0_0_rgba\(255\,255\,255\,1\)\],
+    html.theme-notion .shadow-\[6px_6px_0_0_rgba\(0\,0\,0\,1\)\] {
+      box-shadow: 0 1px 3px rgba(15, 15, 15, 0.05), 0 0 0 1px rgba(15, 15, 15, 0.08) !important;
+      border-radius: 6px !important;
+    }
+    html.theme-notion .shadow-\[4px_4px_0_0_rgba\(255\,255\,255\,1\)\] {
+      box-shadow: 0 1px 2px rgba(15, 15, 15, 0.08) !important;
+      border-radius: 4px !important;
+    }
+    html.theme-notion .shadow-\[3px_3px_0_0_rgba\(255\,255\,255\,1\)\] {
+      box-shadow: 0 1px 2px rgba(15, 15, 15, 0.08) !important;
+      border-radius: 4px !important;
+    }
+    html.theme-notion .shadow-\[0_0_15px_rgba\(255\,255\,255\,0\.2\)\] {
+      box-shadow: 0 2px 6px rgba(15, 15, 15, 0.08) !important;
+    }
+    html.theme-notion .shadow-\[0_-4px_20px_rgba\(0\,0\,0\,0\.5\)\] {
+      box-shadow: 0 -2px 10px rgba(15, 15, 15, 0.04) !important;
+    }
+
+    /* Notion Header & Navigation */
+    html.theme-notion header {
+      background-color: rgba(247, 246, 243, 0.95) !important;
+      border-bottom-color: #e9e9e8 !important;
+      backdrop-filter: blur(12px);
+    }
+    html.theme-notion #tab-btn-checklist.bg-brand-emerald,
+    html.theme-notion #tab-btn-sop.bg-brand-emerald,
+    html.theme-notion #tab-btn-ledger.bg-brand-emerald {
+      background-color: #37352f !important;
+      color: #ffffff !important;
+      border-color: #37352f !important;
+    }
+
+    /* Notion Inputs & Textareas */
+    html.theme-notion input,
+    html.theme-notion textarea,
+    html.theme-notion select {
+      background-color: #f7f6f5 !important;
+      border-color: #e3e2e0 !important;
+      color: #37352f !important;
+      border-radius: 4px !important;
+    }
+    html.theme-notion input:focus,
+    html.theme-notion textarea:focus {
+      border-color: #2eaadc !important;
+      background-color: #ffffff !important;
+    }
+
+    /* Native date pickers in Notion */
+    html.theme-notion input[type="date"] {
+      color: #37352f !important;
+      -webkit-text-fill-color: #37352f !important;
+    }
+
+    /* Modals in Notion */
+    html.theme-notion .bg-black\/75 {
+      background-color: rgba(15, 15, 15, 0.45) !important;
+    }
+
+    /* Notion Callout Box (SOP Memos & Notes) */
+    html.theme-notion .border-white\/60,
+    html.theme-notion .border-white\/30,
+    html.theme-notion .divide-white\/5 > * {
+      border-color: #f1f1ef !important;
+    }
+    html.theme-notion .border-white\/60 {
+      background-color: #f7f6f5 !important;
+      border-radius: 6px !important;
+    }
+
+    /* Notion Accent Colors */
+    html.theme-notion .text-brand-emerald {
+      color: #0f7b6c !important; /* Notion Green */
+    }
+    html.theme-notion .border-brand-emerald {
+      border-color: #0f7b6c !important;
+    }
+    html.theme-notion .bg-brand-emerald {
+      background-color: #0f7b6c !important;
+      color: #ffffff !important;
+    }
+
+    html.theme-notion .text-brand-red {
+      color: #eb5757 !important; /* Notion Red */
+    }
+    html.theme-notion .border-brand-red {
+      border-color: #eb5757 !important;
+    }
+
+    html.theme-notion .text-brand-amber {
+      color: #d9730d !important; /* Notion Orange */
+    }
+    html.theme-notion .bg-brand-amber {
+      background-color: #d9730d !important;
+      color: #ffffff !important;
+    }
+    html.theme-notion .border-brand-amber {
+      border-color: #d9730d !important;
+    }
+
+    html.theme-notion .text-brand-cyan {
+      color: #0b6e99 !important; /* Notion Blue */
+    }
+
+    /* Hover states in Notion */
+    html.theme-notion .hover\:bg-white:hover {
+      background-color: #efefed !important;
+      color: #37352f !important;
+    }
+    html.theme-notion .hover\:text-black:hover {
+      color: #37352f !important;
+    }
+
+    /* Notion Bottom Dock */
+    html.theme-notion .fixed.bottom-0 {
+      background-color: rgba(247, 246, 243, 0.95) !important;
+      border-top-color: #e9e9e8 !important;
+      backdrop-filter: blur(12px);
+    }
+    html.theme-notion #overflow-dropdown-dock {
+      background-color: #ffffff !important;
+      border-color: #e9e9e8 !important;
+      box-shadow: 0 4px 16px rgba(15, 15, 15, 0.1) !important;
+      border-radius: 6px !important;
+    }
+
+    /* Ledger overrides for Notion */
+    html.theme-notion .ledger-card {
+      background-color: #ffffff !important;
+      border-color: #e9e9e8 !important;
+      box-shadow: 0 1px 3px rgba(15, 15, 15, 0.05), 0 0 0 1px rgba(15, 15, 15, 0.08) !important;
+      border-radius: 6px !important;
+    }
+    html.theme-notion .ledger-inner-box {
+      background-color: #f7f6f5 !important;
+      border-color: #e9e9e8 !important;
+      border-radius: 4px !important;
+    }
+    html.theme-notion .ledger-item-row {
+      border-bottom: 1px solid #f1f1ef !important;
+    }
+    html.theme-notion .ledger-item-name {
+      color: #37352f !important;
+    }
+    html.theme-notion .ledger-item-spec {
+      color: #787774 !important;
+    }
+    html.theme-notion .ledger-exempt-badge {
+      background-color: #ffe2dd !important;
+      color: #d44040 !important;
+      border-color: #ffe2dd !important;
+      border-radius: 4px !important;
+    }
+
     /* Modals backdrop */
     html.theme-light .bg-black\/75 {
       background-color: rgba(255, 255, 255, 0.85) !important;
@@ -3361,25 +3567,36 @@
       setFontScale(FONT_SCALES[nextIdx].key, true);
     }
 
+    const THEMES = [
+      { key: 'dark', label: '暗夜先锋 (Dark)', icon: '🌙', badge: 'DARK' },
+      { key: 'light', label: '烈日高反 (Light)', icon: '☀️', badge: 'LIGHT' },
+      { key: 'notion', label: 'Notion 暖白 (Notion)', icon: '📝', badge: 'NOTION' }
+    ];
+
     function initTheme() {
+      document.documentElement.classList.remove('theme-light', 'theme-notion');
       if (currentTheme === 'light') {
         document.documentElement.classList.add('theme-light');
-        const icon = document.getElementById('theme-icon');
-        if (icon) icon.textContent = '🌙';
-      } else {
-        document.documentElement.classList.remove('theme-light');
-        const icon = document.getElementById('theme-icon');
-        if (icon) icon.textContent = '☀️';
+      } else if (currentTheme === 'notion') {
+        document.documentElement.classList.add('theme-notion');
       }
+
+      const target = THEMES.find(t => t.key === currentTheme) || THEMES[0];
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.textContent = target.icon;
+      const label = document.getElementById('theme-label');
+      if (label) label.textContent = target.badge;
     }
 
     function toggleTheme() {
-      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      const currentIdx = THEMES.findIndex(t => t.key === currentTheme);
+      const nextIdx = (currentIdx + 1) % THEMES.length;
+      currentTheme = THEMES[nextIdx].key;
       localStorage.setItem('shootflow_theme', currentTheme);
       initTheme();
       initFontScale();
       triggerHaptic('medium');
-      showToast(currentTheme === 'light' ? '☀️ 已切换为烈日户外高对比模式' : '🌙 已切换为暗夜模式');
+      showToast(`🎨 界面主题已切换为：${THEMES[nextIdx].label}`);
     }
 
     let currentPosterTheme = 'dark'; // 'dark' | 'light'
@@ -4187,9 +4404,12 @@
               </button>
             </div>
             
-            <button id="btn-toggle-theme" onclick="toggleTheme(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors">
-              <span id="theme-icon">☀️</span>
-              <span>THEME</span>
+            <button id="btn-toggle-theme" onclick="toggleTheme(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center justify-between transition-colors">
+              <div class="flex items-center gap-3">
+                <span id="theme-icon">🌙</span>
+                <span>THEME</span>
+              </div>
+              <span id="theme-label" class="text-[10px] text-brand-emerald font-bold border border-brand-emerald px-1.5 py-0.5">DARK</span>
             </button>
             
             <button id="btn-toggle-minimal" onclick="toggleMinimalMode(); document.getElementById('overflow-dropdown-dock').classList.add('hidden');" class="w-full px-4 py-3 text-left text-xs font-mono uppercase text-white hover:bg-white hover:text-black flex items-center gap-3 transition-colors border-t border-white">
